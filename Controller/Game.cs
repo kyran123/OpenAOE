@@ -90,6 +90,7 @@ public class Game : MonoBehaviour {
 			//It's position is based of the X and Z axes because this is supposed to be a flat board in a 3D build!
 			//This means the camera is creating the Isometric view by angling it 50 degrees on the X and 45 on the Y axes.
 			tile_go.transform.position = new Vector3 (xPos, 0, yPos);
+			tile_go.transform.SetParent (this.transform, true);
 
 			//Set Angle of the tile
 			//The tile looks like it is standing up in the standard angle and we want it to lay down flat.

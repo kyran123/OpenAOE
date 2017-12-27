@@ -28,7 +28,7 @@ public class GameTile {
 
 	//Action stores one or mutltiple call(s) to one or more function(s)
 	//We use this to call a function in the Game class to show that tile type has changed!
-	Action<GameTile> cbTileTypeChanged;
+	private Action<GameTile> cbTileTypeChanged;
 
 	//The actual Enum variable that's accessable and changable from outside this class.
 	private TileType type;
