@@ -16,18 +16,41 @@ using System.Xml;
 public class Game : MonoBehaviour {
 
 	//Save sprites here
+
+	//Color Palette:
+	//Grass - #3CC453
+	//Tree (Bright green) - #40C224
+	//Tree (Dark) - #38A61F
 	public Sprite MountainsSprite;
+	public Sprite MountainsSprite1;
+	public Sprite MountainsSprite2;
 	public Sprite GrassSprite;
+	public Sprite GrassSprite1;
+	public Sprite GrassSprite2;
+	public Sprite ForestSprite;
+	public Sprite ForestSprite1;
+	public Sprite ForestSprite2;
 	public Sprite RiverSprite;
+	public Sprite RiverSprite1;
+	public Sprite RiverSprite2;
 	public Sprite SeaSprite;
+	public Sprite SeaSprite1;
+	public Sprite SeaSprite2;
 	public Sprite RoadSprite;
+	public Sprite RoadSprite1;
+	public Sprite RoadSprite2;
 	public Sprite DesertSprite;
+	public Sprite DesertSprite1;
+	public Sprite DesertSprite2;
 	public Sprite HillsSprite;
+	public Sprite HillsSprite1;
+	public Sprite HillsSprite2;
 	//Store instance of the map
 	private GameMap gameMap;
 
 	// Use this for initialization
 	void Start () {
+
 		//Test random tiles
 		//gameMap.RandomizeTiles();
 
@@ -131,44 +154,145 @@ public class Game : MonoBehaviour {
 	void OnTileTypeChange(GameTile tile_data, SpriteRenderer tile_sr){
 		//Every if statement checks if the data type is which one and set the appropriote sprite
 		if (tile_data.Type == GameTile.TileType.Mountains) {
+			//Random number
+			int rand = UnityEngine.Random.Range(0, 3);
 			//Sets mountain sprite
-			tile_sr.sprite = MountainsSprite;
+			switch (rand) {
+				case 0:
+					tile_sr.sprite = MountainsSprite;
+					break;
+				case 1:
+					tile_sr.sprite = MountainsSprite1;
+					break;
+				case 2:
+					tile_sr.sprite = MountainsSprite2;
+					break;
+			}
 			//Terrain modifier sets the amount of movement the character needs to move through the tile
 			tile_data.TerrainModifier = 4;
 		} else if (tile_data.Type == GameTile.TileType.Grass) {
+			//Random number
+			int rand = UnityEngine.Random.Range(0, 3);
 			//Set grass sprite
-			tile_sr.sprite = GrassSprite;
+			switch (rand) {
+				case 0:
+					tile_sr.sprite = GrassSprite;
+					break;
+				case 1:
+					tile_sr.sprite = GrassSprite1;
+					break;
+				case 2:
+					tile_sr.sprite = GrassSprite2;
+					break;
+			}
 			//Terrain modifier sets the amount of movement the character needs to move through the tile
 			tile_data.TerrainModifier = 2;
 		} else if (tile_data.Type == GameTile.TileType.Desert) {
+			//Random number
+			int rand = UnityEngine.Random.Range(0, 3);
 			//Set desert sprite
-			tile_sr.sprite = DesertSprite;
+			switch (rand) {
+				case 0:
+					tile_sr.sprite = DesertSprite;
+					break;
+				case 1:
+					tile_sr.sprite = DesertSprite1;
+					break;
+				case 2:
+					tile_sr.sprite = DesertSprite2;
+					break;
+			}
 			//Terrain modifier sets the amount of movement the character needs to move through the tile
 			tile_data.TerrainModifier = 2;
 		} else if (tile_data.Type == GameTile.TileType.River) {
+			//Random number
+			int rand = UnityEngine.Random.Range(0, 3);
 			//Set river sprite
-			tile_sr.sprite = RiverSprite;
+			switch (rand) {
+				case 0:
+					tile_sr.sprite = RiverSprite;
+					break;
+				case 1:
+					tile_sr.sprite = RiverSprite1;
+					break;
+				case 2:
+					tile_sr.sprite = RiverSprite2;
+					break;
+			}
 			//Terrain modifier sets the amount of movement the character needs to move through the tile
 			//0 means it takes no cost at all, but usually means the tile isn't traversable
 			tile_data.TerrainModifier = 0;
 			//Disables the tile, so units can't walk over them.
 			tile_data.PassableTile = false;
 		} else if (tile_data.Type == GameTile.TileType.Sea) {
+			//Random number
+			int rand = UnityEngine.Random.Range(0, 3);
 			//Set sea sprite
-			tile_sr.sprite = SeaSprite;
+			switch (rand) {
+			case 0:
+				tile_sr.sprite = SeaSprite;
+				break;
+			case 1:
+				tile_sr.sprite = SeaSprite1;
+				break;
+			case 2:
+				tile_sr.sprite = SeaSprite2;
+				break;
+			}
 			//Terrain modifier sets the amount of movement the character needs to move through the tile
 			//0 means it takes no cost at all, but usually means the tile isn't traversable
 			tile_data.TerrainModifier = 0;
 			//Disables the tile, so units can't walk over them.
 			tile_data.PassableTile = false;
 		} else if (tile_data.Type == GameTile.TileType.Hills) {
+			//Random number
+			int rand = UnityEngine.Random.Range(0, 3);
 			//Set hill sprite
-			tile_sr.sprite = HillsSprite;
+			switch (rand) {
+			case 0:
+				tile_sr.sprite = HillsSprite;
+				break;
+			case 1:
+				tile_sr.sprite = HillsSprite1;
+				break;
+			case 2:
+				tile_sr.sprite = HillsSprite2;
+				break;
+			}
 			//Terrain modifier sets the amount of movement the character needs to move through the tile
 			tile_data.TerrainModifier = 3;
-		}else if (tile_data.Type == GameTile.TileType.Stone_Road) {
+		} else if (tile_data.Type == GameTile.TileType.Forest) {
+			//Random number
+			int rand = UnityEngine.Random.Range(0, 3);
+			//Set hill sprite
+			switch (rand) {
+			case 0:
+				tile_sr.sprite = ForestSprite;
+				break;
+			case 1:
+				tile_sr.sprite = ForestSprite1;
+				break;
+			case 2:
+				tile_sr.sprite = ForestSprite2;
+				break;
+			}
+			//Terrain modifier sets the amount of movement the character needs to move through the tile
+			tile_data.TerrainModifier = 3;
+		} else if (tile_data.Type == GameTile.TileType.Stone_Road) {
+			//Random number
+			int rand = UnityEngine.Random.Range(0, 3);
 			//Set road sprite
-			tile_sr.sprite = RoadSprite;
+			switch (rand) {
+			case 0:
+				tile_sr.sprite = RoadSprite;
+				break;
+			case 1:
+				tile_sr.sprite = RoadSprite1;
+				break;
+			case 2:
+				tile_sr.sprite = RoadSprite2;
+				break;
+			}
 			//Terrain modifier sets the amount of movement the character needs to move through the tile
 			tile_data.TerrainModifier = 1;
 		} else {

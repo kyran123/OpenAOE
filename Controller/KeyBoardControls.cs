@@ -77,7 +77,7 @@ public class KeyBoardControls : MonoBehaviour {
 		//Set the position to the game object's transform
 		this.transform.position = currentPosition;
 		//Calculate and store new position for the camera
-		newPosition = new Vector3 ((x - 6), (y + 9), (z - 6));
+		newPosition = new Vector3 ((x - 9), (y + 12), (z - 9));
 	}
 
 	//TODO: Change camera settings like:

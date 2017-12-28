@@ -77,7 +77,7 @@ public class GameMap {
 	public void RandomizeTiles(){
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				int rand = Random.Range (0, 7);
+				int rand = Random.Range (0, 8);
 				if (rand == 0) {
 					tiles [x, y].Type = GameTile.TileType.Grass;
 				} else if (rand == 1) {
@@ -92,6 +92,8 @@ public class GameMap {
 					tiles [x, y].Type = GameTile.TileType.Sea;
 				} else if (rand == 6) {
 					tiles [x, y].Type = GameTile.TileType.Stone_Road;
+				} else {
+					tiles [x, y].Type = GameTile.TileType.Forest;
 				}
 			}
 		}

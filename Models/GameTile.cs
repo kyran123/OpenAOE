@@ -18,6 +18,7 @@ public class GameTile {
 	public enum TileType { 
 		Empty,
 		Grass, 
+		Forest,
 		Mountains, 
 		River, 
 		Desert,
@@ -128,6 +129,9 @@ public class GameTile {
 			break;
 		case "Desert":
 			this.Type = GameTile.TileType.Desert;
+			break;
+		case "Forest":
+			this.Type = GameTile.TileType.Forest;
 			break;
 		case "Hill":
 			this.Type = GameTile.TileType.Hills;
