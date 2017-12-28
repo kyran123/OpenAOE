@@ -13,6 +13,10 @@ using UnityEngine;
 //
 public class GameMap {
 
+	//Saves the instance of GameMap
+	//We do this so other non related C# scripts can interact with the map
+	public static GameMap _GMinstance { get; protected set; }
+
 	//Array with 2 keys to store references to the tile classes
 	// - 1st key is the X coordinate
 	// - 2nd key is the Y coordinate
@@ -44,6 +48,7 @@ public class GameMap {
 	public GameMap(int width = 50, int height = 50){
 		this.width = width;
 		this.height = height;
+		_GMinstance = this;
 
 		//Initialize the game tile array with the length
 		tiles = new GameTile[width, height];
@@ -51,15 +56,20 @@ public class GameMap {
 
 	//Creates a new tile instance
 	public void setTile(int x, int y){
+		//Stores the new tile Instance in the tiles array with the X and Y coordinates as key
 		tiles [x, y] = new GameTile (this, x, y);
 	}
 
 	//returns the tile instance found on X and Y coordinates
 	public GameTile getTileAt(int x, int y){
+		//Checks if the X and Y coordinate exceeds map limits
 		if (x > width || x < 0 || y > height || y < 0) {
+			//Log that the tile is out of range
 			Debug.LogError ("Tile (" + x + ", " + y + ") is out of range.");
+			//Return null instead of a tile
 			return null;
 		}
+		//Return the tile based on the X and Y coordinate
 		return tiles [x, y];
 	}
 

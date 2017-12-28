@@ -1,7 +1,16 @@
-﻿using System.Collections;
+﻿//=======================================================================//
+// Copyright: Kyran Studios												 //
+// Written by: Kyle Fransen												 //
+// Https://resume.kylefransen.nl										 //
+//=======================================================================//
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//
+// The keyboard controls class that handles all input from the keyboard.
+//
 public class KeyBoardControls : MonoBehaviour {
 
 	private Camera cam;
@@ -55,11 +64,28 @@ public class KeyBoardControls : MonoBehaviour {
 	//Moves the selector to the new tile.
 	//Params: X, Y and Z coordinates for the selector
 	private void updatePosition(float x, float y, float z){
+		//Checks if the user doesn't go out of bounds
+		if (x < 0 || y < 0 || z < 0 || x > (GameMap._GMinstance.Width - 1) || z > (GameMap._GMinstance.Height - 1)) {
+			//Log error that user want to go out of bounds
+			Debug.LogError ("Out of bounds!");
+			//Return to prevent the user from moving onto a non existing tile
+			return;
+		}
+
 		//Save the vector as the current position;
 		currentPosition = new Vector3 (x, y, z);
 		//Set the position to the game object's transform
 		this.transform.position = currentPosition;
 		//Calculate and store new position for the camera
-		newPosition = new Vector3 ((x - 2), (y + 5), (z - 2));
+		newPosition = new Vector3 ((x - 6), (y + 9), (z - 6));
 	}
+
+	//TODO: Change camera settings like:
+	//Possibly - Projection to Orthographic
+	//The near clipping panes need to be adjusted
+	//And change camera position
+	//Do this when art has been already created
+
+	//TODO: Mouseclick
+	//Set the position of the selector to the mouse click position
 }
