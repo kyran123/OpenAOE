@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Xml;
+using System.Xml.Serialization;
 
 //
 // The main controller
@@ -47,6 +48,8 @@ public class Game : MonoBehaviour {
 	public Sprite HillsSprite2;
 	//Store instance of the map
 	private GameMap gameMap;
+	//Store instances of GameCharacters
+	private List<GameCharacter> unitList;
 
 	// Use this for initialization
 	void Start () {
@@ -60,7 +63,7 @@ public class Game : MonoBehaviour {
 		XmlDocument rawXML = new XmlDocument();
 
 		//Loads file into the instance of XmlDocument
-		rawXML.Load (Application.dataPath + "/Data/flatlandmap.xml");
+		rawXML.Load (Application.dataPath + "/Data/Maps/flatlandmap.xml");
 
 		//Get all elements within the XML with the tag 'Tile'
 		XmlNodeList TileList = rawXML.GetElementsByTagName ("Tile");
@@ -141,6 +144,16 @@ public class Game : MonoBehaviour {
 			//Sets the actual tile type
 			tile_data.setTileType (tileType);
 		}
+
+		//
+		//TEST
+		//
+		//Generate 1 character pikemen
+		GameCharacter pikemen1 = new CharacterPikemen();
+		//Create new List
+		unitList = new List<GameCharacter>();
+		//Add pikemen to list
+		unitList.Add (pikemen1);
 	}
 
 	// Update is called once per frame

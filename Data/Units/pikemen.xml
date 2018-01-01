@@ -1,0 +1,30 @@
+<unit>
+	<id>0001</id>
+	<name>Pikemen</name>
+	<type>infantry</type>
+	<base>
+		<hitpoints>100</hitpoints>
+		<damage>150</damage>
+		<defense>200</defense>
+		<movement>7</movement>
+		<viewrange>7</viewrange>
+		<attackrange>1</attackrange>
+	</base>
+	<special>antiCavalry</special>
+	<abilities>
+		<ability>Pillage</ability>
+	</abilities>
+	<isunlocked>true</isunlocked>
+	<costtounlock>1500</costtounlock>
+	<cost>
+		<food>50</food>
+		<iron>10</iron>
+		<gold>5</gold>
+	</cost>
+	<research>0</research>
+	<replacedby>0004</replacedby>
+	<bonuses>
+		<minor>Siege</minor>
+		<minor>Building</minor>
+	</bonuses>
+</unit>

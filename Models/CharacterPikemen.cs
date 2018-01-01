@@ -1,16 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Xml;
+using System.Xml.Serialization;
 
-public class CharacterPikemen : MonoBehaviour {
+public class CharacterPikemen : GameCharacter {
 
-	// Use this for initialization
-	void Start () {
-		
+
+	public CharacterPikemen() : base("pikemen.xml") {
+			
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+
+	//Movement
+
+
+	//Special abilities:
+	public void antiCavalry(){
+
 	}
 }
