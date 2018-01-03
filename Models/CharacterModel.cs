@@ -17,7 +17,7 @@ public class CharacterModel {
 	public CharacterModel(){
 		//Create empty object
 		this.unitModel = createEmptyGameObject();
-		setGameObjectPosition(0, 0);
+		setGameObjectPosition(5, 5);
 	}
 
 	//Creates empty game object and returns it
@@ -30,14 +30,29 @@ public class CharacterModel {
 
 	//set Model for the object
 	public void setModel(){
+		//TODO: add the actual 3D model to the MeshRenderer
 		this.unitModel.AddComponent<MeshRenderer>();
 	}
 
-	//Set position of object
+
 	public void setGameObjectPosition(int x, int z){
 		float xPosition = (float)x;
 		float zPosition = (float)z;
-		this.unitModel.transform.DOMove(new Vector3(xPosition, 0.5f, zPosition), 0.5f);
+		this.unitModel.transform.DOMove(new Vector3(xPosition, 0.5f, zPosition), 0.2f);
+	}
+
+	//Set position of object
+	public void setGameObjectPosition(List<GameTile> path){
+		Sequence movementSequence = DOTween.Sequence();
+
+		//Loop through all the tiles within the list
+		foreach(GameTile nextTile in path) {
+			float xPosition = (float)nextTile.X;
+			float zPosition = (float)nextTile.Z;
+			//Debug.Log(nextTile.X + "_" + nextTile.Z);
+			//Set the object position to the next tile in the list
+			movementSequence.Append(this.unitModel.transform.DOMove(new Vector3(xPosition, 0.5f, zPosition), 0.2f));
+		}
 	}
 }
 

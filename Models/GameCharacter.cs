@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using DG.Tweening;
 
 public abstract class GameCharacter {
 
@@ -18,13 +19,22 @@ public abstract class GameCharacter {
 		return this.charInteraction;
 	}
 
+	//Variable where the Character AI will be stored
+	protected CharacterAI charAI;
+	//The getter of the variable. There is no setter as it never should change!
+	public CharacterAI getCharacterAI(){
+		return this.charAI;
+	}
+
 	//Constructor
 	// Param 1: name of the data file in string format
 	public GameCharacter (string type) {
 		//Instantiate CharacterModel class
-		charModel = new CharacterModel();
+		this.charModel = new CharacterModel();
 		//Instantiate CharacterInteraction class
-		charInteraction = new CharacterInteraction();
+		this.charInteraction = new CharacterInteraction();
+		//Instantiate CharacterAI class
+		this.charAI = new CharacterAI();
 	}
 		
 	// Properties of the X Position
@@ -45,5 +55,18 @@ public abstract class GameCharacter {
 	public GameCharacter getInstance() { return this; }
 	public GameObject getCharacterObject() { return this.charModel.getGameObject(); }
 
+	//Move the unit to the target position
+	public void moveUnitTo(GameTile oldPosition, GameTile newPosition){
+		//Get the list of tiles of the path from the AI.findPath function!
+		List<GameTile> path = this.charAI.findPath(oldPosition, newPosition);
+		//Check if the list has at least 1 tile in it
+		if(path.Count > 0) {
+			this.charModel.setGameObjectPosition(path);
+			this.charInteraction.x = newPosition.X;
+			this.charInteraction.z = newPosition.Z;
+		} else {
+			//ERROR
+		}
+	}
 }
 

@@ -69,22 +69,29 @@ public class KeyBoardControls : MonoBehaviour {
 		if(Input.GetKeyDown(KeyCode.Return) || Input.GetKey("enter")){
 			int x = Mathf.RoundToInt(this.transform.position.x);
 			int z = Mathf.RoundToInt(this.transform.position.z);
+
 			//Select unit or building that is in that tile
 			GameCharacter select = Game.getCharacterOnPosition(x, z);
 
+			//If there has no unit been selected yet
 			if(selectedUnit != null) {
+				//Check if the tile that has been selected does have any units (Later also buildings)
 				if(select == null) {
 					//No units here, move the selected unit.
-					selectedUnit.getCharacterModel().setGameObjectPosition(x, z);
-
+					selectedUnit.moveUnitTo(GameMap._GMinstance.getTileAt(selectedUnit.getXPosition(), selectedUnit.getZPosition()), GameMap._GMinstance.getTileAt(x, z));
 				} else if(select.getXPosition() == selectedUnit.getXPosition() && select.getZPosition() == selectedUnit.getZPosition()) {
 					//Same unit selected! Attack? powers?
 				} else if(Game.getCharacterOnPosition(Mathf.RoundToInt(this.transform.position.x), Mathf.RoundToInt(this.transform.position.z)) != null) {
 					//Select the new unit
+					selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.white;
+					selectedUnit = null;
 				}
 			} else {
+				//When unit has not been selected yet, and the tile that has been pressed enter on has a unit. 
 				if(select != null) {
+					//Set that unit as the selected unit.
 					selectedUnit = select;
+					selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.blue;
 				}
 			}
 		}

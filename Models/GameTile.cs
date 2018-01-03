@@ -91,10 +91,21 @@ public class GameTile {
 	//Variable that keeps track of the Y coord.
 	//You are not allowed to change them as soon as the map has been built.
 	//When game ends, all tile references will be destroyed/removed.
-	private int y;
-	public int Y {
+	private int z;
+	public int Z {
 		get {
-			return y;
+			return z;
+		}
+	}
+
+	//Neighbour tiles of this tile
+	private List<GameTile> neighbourTiles;
+	public List<GameTile> getNeighbourTiles {
+		get { 
+			return neighbourTiles;
+		}
+		set { 
+			this.neighbourTiles = value; 
 		}
 	}
 
@@ -102,10 +113,23 @@ public class GameTile {
 	//Gamemap, is the GameMap instance
 	//X = X coordinate
 	//Y = Y coordinate
-	public GameTile(GameMap gameMap, int x, int y) {
+	public GameTile(GameMap gameMap, int x, int z) {
 		this.gameMap = gameMap;
 		this.x = x;
-		this.y = y;
+		this.z = z;
+		this.neighbourTiles = new List<GameTile>();
+	}
+
+	public float distanceTo(GameTile neighbour){
+		if(neighbour != null) {
+			return Vector2.Distance(
+				new Vector2(this.X, this.Z),
+				new Vector2(neighbour.X, neighbour.Z)
+			);
+		} else {
+			Debug.LogError("No neighbour found?");
+			return 0;
+		}
 	}
 
 	//Register a function to be called back when our tile type changes.

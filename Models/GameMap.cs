@@ -19,7 +19,7 @@ public class GameMap {
 
 	//Array with 2 keys to store references to the tile classes
 	// - 1st key is the X coordinate
-	// - 2nd key is the Y coordinate
+	// - 2nd key is the z coordinate
 	private GameTile[,] tiles;
 
 	//The variable that keeps track of the width of the map
@@ -55,45 +55,82 @@ public class GameMap {
 	}
 
 	//Creates a new tile instance
-	public void setTile(int x, int y){
-		//Stores the new tile Instance in the tiles array with the X and Y coordinates as key
-		tiles [x, y] = new GameTile (this, x, y);
+	public void setTile(int x, int z){
+		//Stores the new tile Instance in the tiles array with the X and z coordinates as key
+		tiles [x, z] = new GameTile (this, x, z);
 	}
 
-	//returns the tile instance found on X and Y coordinates
-	public GameTile getTileAt(int x, int y){
+	//returns the tile instance found on X and Z coordinates
+	public GameTile getTileAt(int x, int z){
 		//Checks if the X and Y coordinate exceeds map limits
-		if (x > width || x < 0 || y > height || y < 0) {
+		if (x > width || x < 0 || z > height || z < 0) {
 			//Log that the tile is out of range
-			Debug.LogError ("Tile (" + x + ", " + y + ") is out of range.");
+			Debug.LogError ("Tile (" + x + ", " + z + ") is out of range.");
 			//Return null instead of a tile
 			return null;
 		}
-		//Return the tile based on the X and Y coordinate
-		return tiles [x, y];
+		//Return the tile based on the X and Z coordinate
+		return tiles [x, z];
+	}
+
+	//Return the tile array itself
+	public GameTile[,] getTileArray(){
+		return tiles;
+	}
+
+	//Adds neighbours to tiles to create a graph used for pathfinding
+	public void generatePathfindingGraph(){
+		//Loop through the array
+		for(int x = 0; x < width; x++) {
+			for(int z = 0; z < height; z++) {
+				//Add neighbours to the west (and check if thez are within the bounds of the map
+				if(x > 0) {
+					addNeighbour((x - 1), z, x, z);
+				}
+				//Add neighbours to the east (and check if they are within the bounds of the map
+				if(x < (this.Width - 1)) {
+					addNeighbour((x + 1), z, x, z);
+				}
+				//Add neighbours to the north (and check if they are within the bounds of the map
+				if(z > 0) {
+					addNeighbour(x, (z - 1), x, z);
+				}
+				//Add neighbours to the south (and check if they are within the bounds of the map
+				if(z < (this.Width - 1)) {
+					addNeighbour(x, (z + 1), x, z);
+				}
+			}
+		}
+	}
+
+	//Add the neighbour of a tile when it is passable
+	public void addNeighbour(int neighbourX, int neighbourZ, int x, int z){
+		if(tiles[neighbourX, neighbourZ].PassableTile) {
+			tiles[x, z].getNeighbourTiles.Add(tiles[neighbourX, neighbourZ]);
+		}
 	}
 
 	//Test function that randomizes tile types.
 	public void RandomizeTiles(){
 		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
+			for (int z = 0; z < height; z++) {
 				int rand = Random.Range (0, 8);
 				if (rand == 0) {
-					tiles [x, y].Type = GameTile.TileType.Grass;
+					tiles [x, z].Type = GameTile.TileType.Grass;
 				} else if (rand == 1) {
-					tiles [x, y].Type = GameTile.TileType.Mountains;
+					tiles [x, z].Type = GameTile.TileType.Mountains;
 				} else if (rand == 2) {
-					tiles [x, y].Type = GameTile.TileType.Desert;
+					tiles [x, z].Type = GameTile.TileType.Desert;
 				} else if (rand == 3) {
-					tiles [x, y].Type = GameTile.TileType.Hills;
+					tiles [x, z].Type = GameTile.TileType.Hills;
 				} else if (rand == 4) {
-					tiles [x, y].Type = GameTile.TileType.River;
+					tiles [x, z].Type = GameTile.TileType.River;
 				} else if (rand == 5) {
-					tiles [x, y].Type = GameTile.TileType.Sea;
+					tiles [x, z].Type = GameTile.TileType.Sea;
 				} else if (rand == 6) {
-					tiles [x, y].Type = GameTile.TileType.Stone_Road;
+					tiles [x, z].Type = GameTile.TileType.Stone_Road;
 				} else {
-					tiles [x, y].Type = GameTile.TileType.Forest;
+					tiles [x, z].Type = GameTile.TileType.Forest;
 				}
 			}
 		}

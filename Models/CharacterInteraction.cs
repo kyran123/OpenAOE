@@ -29,8 +29,8 @@ public class CharacterInteraction {
 
 	//TODO: Remove contructor
 	public CharacterInteraction(){
-		xPos = 0;
-		zPos = 0;
+		xPos = 5;
+		zPos = 5;
 	}
 }
 
