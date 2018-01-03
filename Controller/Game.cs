@@ -16,6 +16,9 @@ using System.Xml.Serialization;
 //
 public class Game : MonoBehaviour {
 
+	//Private instance variable
+	protected static Game _GameInstance { get; set; }
+
 	//Save sprites here
 
 	//Color Palette:
@@ -49,13 +52,14 @@ public class Game : MonoBehaviour {
 	//Store instance of the map
 	private GameMap gameMap;
 	//Store instances of GameCharacters
-	private List<GameCharacter> unitList;
+	public List<GameCharacter> unitList;
 
 	// Use this for initialization
 	void Start () {
 
 		//Test random tiles
 		//gameMap.RandomizeTiles();
+		Game._GameInstance = this;
 
 		//Code to load map from XML
 		//TODO: The file changes depending on chosen map!
@@ -159,6 +163,18 @@ public class Game : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
+	}
+
+	public static GameCharacter getCharacterOnPosition(int x, int z){
+		foreach (GameCharacter character in Game._GameInstance.unitList) {
+			if (
+				character.getXPosition () == x &&
+				character.getZPosition () == z
+			) {
+				return character.getInstance ();
+			}
+		}
+		return null;
 	}
 
 	//Function that gets called as soon as the type of a tile changes.

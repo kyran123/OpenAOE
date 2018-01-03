@@ -1,21 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Xml;
-using System.Xml.Serialization;
+using System;
 
 public class CharacterPikemen : GameCharacter {
-
-
-	public CharacterPikemen() : base("pikemen.xml") {
-			
-	}
-
-	//Movement
-
-
-	//Special abilities:
-	public void antiCavalry(){
-
-	}
+	public CharacterPikemen() : base("pikemen.xml") {}
 }
+

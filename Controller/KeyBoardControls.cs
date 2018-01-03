@@ -11,6 +11,9 @@ using UnityEngine;
 //
 // The keyboard controls class that handles all input from the keyboard.
 //
+using System;
+
+
 public class KeyBoardControls : MonoBehaviour {
 
 	private Camera cam;
@@ -18,6 +21,8 @@ public class KeyBoardControls : MonoBehaviour {
 	private Vector3 currentPosition;
 	Vector3 newPosition;
 	Vector3 velocity;
+
+	protected GameCharacter selectedUnit;
 
 	// Use this for initialization
 	void Start () {
@@ -32,32 +37,56 @@ public class KeyBoardControls : MonoBehaviour {
 		//Check what input is given and send the new position to the updatePosition function
 		if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A)){
 			//Save the original position of the selector
-			Vector3 oldPosition = this.transform.position;
+			oldPosition = this.transform.position;
 			//Call update position function with the updated position
 			updatePosition(oldPosition.x, oldPosition.y, (oldPosition.z + 1));
 		}
 		if(Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)){
 			//Save the original position of the selector
-			Vector3 oldPosition = this.transform.position;
+			oldPosition = this.transform.position;
 			//Call update position function with the updated position
 			updatePosition(oldPosition.x, oldPosition.y, (oldPosition.z - 1));
 		}
 		if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)){
 			//Save the original position of the selector
-			Vector3 oldPosition = this.transform.position;
+			oldPosition = this.transform.position;
 			//Call update position function with the updated position
 			updatePosition((oldPosition.x + 1), oldPosition.y, oldPosition.z);
 		}
 		if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)){
 			//Save the original position of the selector
-			Vector3 oldPosition = this.transform.position;
+			oldPosition = this.transform.position;
 			//Call update position function with the updated position
 			updatePosition((oldPosition.x - 1), oldPosition.y, oldPosition.z);
 		}
 		//Check if the old position is the same as the new one.
-		if (Vector3.Distance (oldPosition, newPosition) > 1.0) {
+		if (Vector3.Distance(oldPosition, newPosition) > 1.0) {
 			//If the 2 positions aren't the same, move the position of the camera to follow the selector
 			cam.transform.position = Vector3.SmoothDamp (cam.transform.position, newPosition, ref velocity, 0.3F);
+		}
+
+		//Check if enter is pressed
+		if(Input.GetKeyDown(KeyCode.Return) || Input.GetKey("enter")){
+			int x = Mathf.RoundToInt(this.transform.position.x);
+			int z = Mathf.RoundToInt(this.transform.position.z);
+			//Select unit or building that is in that tile
+			GameCharacter select = Game.getCharacterOnPosition(x, z);
+
+			if(selectedUnit != null) {
+				if(select == null) {
+					//No units here, move the selected unit.
+					selectedUnit.getCharacterModel().setGameObjectPosition(x, z);
+
+				} else if(select.getXPosition() == selectedUnit.getXPosition() && select.getZPosition() == selectedUnit.getZPosition()) {
+					//Same unit selected! Attack? powers?
+				} else if(Game.getCharacterOnPosition(Mathf.RoundToInt(this.transform.position.x), Mathf.RoundToInt(this.transform.position.z)) != null) {
+					//Select the new unit
+				}
+			} else {
+				if(select != null) {
+					selectedUnit = select;
+				}
+			}
 		}
 	}
 
