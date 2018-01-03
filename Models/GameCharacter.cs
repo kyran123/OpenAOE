@@ -32,6 +32,9 @@ public abstract class GameCharacter {
 		return this.charAI;
 	}
 
+	//TEMP VARIABLE
+	public int movementPoints = 7;
+
 	//Constructor
 	// Param 1: name of the data file in string format
 	public GameCharacter (string type) {
@@ -70,11 +73,14 @@ public abstract class GameCharacter {
 		List<GameTile> path = this.charAI.findPath(oldPosition, newPosition);
 		//Check if the list has at least 1 tile in it
 		if(path.Count > 0) {
-			//Set the position
-			this.charModel.setGameObjectPosition(path);
-			//Update position in the interaction class
-			this.charInteraction.x = newPosition.X;
-			this.charInteraction.z = newPosition.Z;
+			Debug.Log(this.charInteraction.isReachable(this.movementPoints, path));
+			if(this.charInteraction.isReachable(this.movementPoints, path)){
+				//Set the position
+				this.charModel.setGameObjectPosition(path);
+				//Update position in the interaction class
+				this.charInteraction.x = newPosition.X;
+				this.charInteraction.z = newPosition.Z;
+			}
 		} else {
 			//ERROR
 		}
