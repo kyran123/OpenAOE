@@ -169,15 +169,24 @@ public class Game : MonoBehaviour {
 		
 	}
 
+	//Function that gets the unit based on location
+	//So when user presses enter the Keyboardcontrols class will call this function to find any units on that location
+	// - Param 1: X coordinate
+	// - Param 2: Z coordinate
 	public static GameCharacter getCharacterOnPosition(int x, int z){
+		//Loop through the all the units in game
 		foreach (GameCharacter character in Game._GameInstance.unitList) {
+			//Check if this unit position is equal to the given coordinates
 			if (
 				character.getXPosition () == x &&
 				character.getZPosition () == z
 			) {
+				//Return this unit if there is indeed an Unit on that tile
 				return character.getInstance ();
 			}
 		}
+		//Return null when no unit has been found.
+		//This often means that the user wants to move an already selected unit.
 		return null;
 	}
 

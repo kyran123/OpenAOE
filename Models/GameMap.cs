@@ -78,9 +78,9 @@ public class GameMap {
 		return tiles;
 	}
 
-	//Adds neighbours to tiles to create a graph used for pathfinding
+	//Function that generates a graph for the path finding
 	public void generatePathfindingGraph(){
-		//Loop through the array
+		//Loop through all the tiles on the X and Z coords
 		for(int x = 0; x < width; x++) {
 			for(int z = 0; z < height; z++) {
 				//Add neighbours to the west (and check if thez are within the bounds of the map
@@ -104,8 +104,11 @@ public class GameMap {
 	}
 
 	//Add the neighbour of a tile when it is passable
+	//This is necessary to create the graph for path finding
 	public void addNeighbour(int neighbourX, int neighbourZ, int x, int z){
+		//Checks if the Tile is passable or not
 		if(tiles[neighbourX, neighbourZ].PassableTile) {
+			//Add the tile to the List if it is passable
 			tiles[x, z].getNeighbourTiles.Add(tiles[neighbourX, neighbourZ]);
 		}
 	}

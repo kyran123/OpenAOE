@@ -1,4 +1,10 @@
-﻿using System.Collections;
+﻿//=======================================================================//
+// Copyright: Kyran Studios												 //
+// Written by: Kyle Fransen												 //
+// Https://resume.kylefransen.nl										 //
+//=======================================================================//
+
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,22 +15,31 @@ public class CharacterAI {
 	//Variable where the game map will be stored
 	protected GameMap gameMap;
 
+	//Lists and Dictionaries of Tiles for the pathfinding
+	//DistanceBetweenFiles stores the source Tile and how far it's bordering tiles are away from it (including movement cost)
 	Dictionary<GameTile, float> distanceBetweenTiles;
+	//previousTile is a List that potental Tiles will be added.
+	//It creates a chain of Tiles that will ALWAYS lead back to the original source tile
 	Dictionary<GameTile, GameTile> previousTile;
+	//unvisited is a qeue for the path finding
+	//Tiles in this list have yet to be checked for a route.
 	List<GameTile> unvisited;
 
+	//Constructor
 	public CharacterAI() {
 		//Get the game map class instance
 		this.gameMap = GameMap._GMinstance;
 
+		//Create the dictionaries and lists
 		distanceBetweenTiles = new Dictionary<GameTile, float>();
 		previousTile = new Dictionary<GameTile, GameTile>();
 		unvisited = new List<GameTile>();
 	}
 
 	//Finds a path of tiles needed to get to the destination.
+	// - Param 1: Source tile (The tile that the unit starts of with)
+	// - Param 2: Target tile (The destination tile that unit wants to go to)
 	public List<GameTile> findPath(GameTile source, GameTile target){
-		//TODO: Add movement points
 		//Dictionary of tiles, that stores the distance from eachother
 		distanceBetweenTiles.Clear();
 		//Dictionary of tiles that make up the path
@@ -52,33 +67,36 @@ public class CharacterAI {
 			unvisited.Add(node);
 		}
 
+		//Loop through the unvisited qeue as long as it has 1 or more items in it
 		while(unvisited.Count > 0) {
-			//Unvisited node with the smallest distance
+			//Variable to store GameTile
 			GameTile tileNode = null;
 
-			//Loop through all possible nodes
+			//Loop through all possible Tiles in unvisited
 			foreach(GameTile possibleNode in unvisited) {
-				//Check for the closest node
+				//Check for the closest Tile
 				if(tileNode == null || distanceBetweenTiles[possibleNode] < distanceBetweenTiles[tileNode]) {
-					//Set the closest node
+					//If it is the closest tile, set it as the current tile
 					tileNode = possibleNode;
 				}
 			}
 
-			//If we find target exit the while loop
+			//If the current tile, is also the target tile
 			if(tileNode == target) {
+				//Stop the loop
 				break;
 			}
 
-			//Remove this node from the qeue
+			//If it isn't the target tile then remove this node from the qeue
 			unvisited.Remove(tileNode);
 
 			//Loop through all neighbour tiles of node
 			foreach(GameTile node in tileNode.getNeighbourTiles) {
-				//Calculate distance
+				//Calculate distance (including terrain modifier)
 				float alt = distanceBetweenTiles[tileNode] + (tileNode.distanceTo(node) + node.TerrainModifier);
-				//Check if the new calculate distance is smaller than the previous node
+				//Check if the new calculated distance is smaller than the previous node
 				if(alt < distanceBetweenTiles[node]) {
+					//Override the old tile with the new one, which has smaller distance
 					distanceBetweenTiles[node] = alt;
 					previousTile[node] = tileNode;
 				}
@@ -88,8 +106,9 @@ public class CharacterAI {
 		//We either found the shortest route to our target
 		//Or we didn't find a route at all to our target
 
+		//Check if didn't find a route at all
 		if(previousTile[target] == null) {
-			//No route for our target!
+			//No route for our target and return an empty list!
 			return new List<GameTile>();
 		}
 

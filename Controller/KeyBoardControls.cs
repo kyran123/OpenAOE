@@ -65,7 +65,7 @@ public class KeyBoardControls : MonoBehaviour {
 			cam.transform.position = Vector3.SmoothDamp (cam.transform.position, newPosition, ref velocity, 0.3F);
 		}
 
-		//Check if enter is pressed
+		//Check if enter is pressed (Later also mouse click and tapping the screen)
 		if(Input.GetKeyDown(KeyCode.Return) || Input.GetKey("enter")){
 			int x = Mathf.RoundToInt(this.transform.position.x);
 			int z = Mathf.RoundToInt(this.transform.position.z);
@@ -91,6 +91,8 @@ public class KeyBoardControls : MonoBehaviour {
 				if(select != null) {
 					//Set that unit as the selected unit.
 					selectedUnit = select;
+					//Change color of the unit to indicate that the unit has been selected
+					//In the future you might want to make this an glow behind it, instead.
 					selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.blue;
 				}
 			}

@@ -1,4 +1,10 @@
-﻿using System.Collections;
+﻿//=======================================================================//
+// Copyright: Kyran Studios												 //
+// Written by: Kyle Fransen												 //
+// Https://resume.kylefransen.nl										 //
+//=======================================================================//
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -33,6 +39,9 @@ public abstract class GameCharacter {
 		this.charModel = new CharacterModel();
 		//Instantiate CharacterInteraction class
 		this.charInteraction = new CharacterInteraction();
+		//Set start coordinates of unit (This will depend on scenario later)
+		this.charInteraction.x = 5;
+		this.charInteraction.z = 5;
 		//Instantiate CharacterAI class
 		this.charAI = new CharacterAI();
 	}
@@ -61,7 +70,9 @@ public abstract class GameCharacter {
 		List<GameTile> path = this.charAI.findPath(oldPosition, newPosition);
 		//Check if the list has at least 1 tile in it
 		if(path.Count > 0) {
+			//Set the position
 			this.charModel.setGameObjectPosition(path);
+			//Update position in the interaction class
 			this.charInteraction.x = newPosition.X;
 			this.charInteraction.z = newPosition.Z;
 		} else {

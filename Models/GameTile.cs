@@ -113,6 +113,7 @@ public class GameTile {
 	//Gamemap, is the GameMap instance
 	//X = X coordinate
 	//Y = Y coordinate
+	//NeighbourTiles = List of Tiles that border this tile
 	public GameTile(GameMap gameMap, int x, int z) {
 		this.gameMap = gameMap;
 		this.x = x;
@@ -120,15 +121,20 @@ public class GameTile {
 		this.neighbourTiles = new List<GameTile>();
 	}
 
+	//Calculate and return the distance between 2 tiles
 	public float distanceTo(GameTile neighbour){
+		//Check if the given parameter is not null
 		if(neighbour != null) {
+			//Calculate and return result
 			return Vector2.Distance(
 				new Vector2(this.X, this.Z),
 				new Vector2(neighbour.X, neighbour.Z)
 			);
 		} else {
+			//Error if parameter is null
 			Debug.LogError("No neighbour found?");
-			return 0;
+			//Return 10 (movement cost) so that the code can continue without any errors
+			return 10;
 		}
 	}
 
