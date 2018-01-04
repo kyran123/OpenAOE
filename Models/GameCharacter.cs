@@ -73,7 +73,7 @@ public abstract class GameCharacter {
 		List<GameTile> path = this.charAI.findPath(oldPosition, newPosition);
 		//Check if the list has at least 1 tile in it
 		if(path.Count > 0) {
-			if(this.charAI.isReachable(this.movementPoints, path)){
+			if(this.charAI.isReachable(newPosition)) {
 				//Set the position
 				this.charModel.setGameObjectPosition(path);
 				//Update position in the interaction class

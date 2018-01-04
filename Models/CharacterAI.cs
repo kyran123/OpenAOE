@@ -139,22 +139,14 @@ public class CharacterAI {
 	}
 
 	//Function that checks if Path to target is within the amount of movement points the unit has
-	public bool isReachable(int mp, List<GameTile> path){
-		//Create variable that will store the amount of points needed to get to target tile and set it to 0
-		int totalPointsNeeded = 0;
-		//Loop through all tiles the unit will traverse
-		for(int i = 1; i < (path.Count - 1); i++) {
-			//Add the points needed to walk through the tile
-			totalPointsNeeded += path[i].TerrainModifier;
-		}
-		//Check if the unit has enough movement points needed to get to target tile
-		if(mp < totalPointsNeeded) {
-			//Can't make this move (out of range)
-			return false;
-		} else {
-			//Can make move
+	public bool isReachable(GameTile destination){
+		//Check if the destination tile is in the reachable tiles list
+		if(allReachableTiles.Contains(destination)) {
+			//Unit can make the move
 			return true;
 		}
+		//Can't make this move, out of range
+		return false;
 	}
 
 	//Function to show what possible moves you have
