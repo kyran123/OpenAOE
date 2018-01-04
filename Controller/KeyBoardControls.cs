@@ -78,7 +78,12 @@ public class KeyBoardControls : MonoBehaviour {
 				//Check if the tile that has been selected does have any units (Later also buildings)
 				if(select == null) {
 					//No units here, move the selected unit.
+					selectedUnit.getCharacterAI().removePossibleMovesGraph();
 					selectedUnit.moveUnitTo(GameMap._GMinstance.getTileAt(selectedUnit.getXPosition(), selectedUnit.getZPosition()), GameMap._GMinstance.getTileAt(x, z));
+					selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.white;
+					//TODO: Unit should get the option to click done, attack etc.
+					//TODO: Unit should be frozen after clicking done and unable to move until next turn!
+
 				} else if(select.getXPosition() == selectedUnit.getXPosition() && select.getZPosition() == selectedUnit.getZPosition()) {
 					//Same unit selected! Attack? powers?
 				} else if(Game.getCharacterOnPosition(Mathf.RoundToInt(this.transform.position.x), Mathf.RoundToInt(this.transform.position.z)) != null) {
@@ -94,6 +99,7 @@ public class KeyBoardControls : MonoBehaviour {
 					//Change color of the unit to indicate that the unit has been selected
 					//In the future you might want to make this an glow behind it, instead.
 					selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.blue;
+					selectedUnit.getCharacterAI().generatePossibleMovesGraph(GameMap._GMinstance.getTileAt(x, z), selectedUnit.movementPoints);
 				}
 			}
 		}

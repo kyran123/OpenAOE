@@ -13,6 +13,10 @@ using System;
 // The tile class of the ingame map
 //
 public class GameTile {
+
+	//Object of GameTile
+	public GameObject thisTile { get; set; }
+
 	//The type of the game tile. 
 	//This is only for the type of ground, not the buildings or ores above it.
 	public enum TileType { 

@@ -147,6 +147,7 @@ public class Game : MonoBehaviour {
 
 			//Sets the actual tile type
 			tile_data.setTileType (tileType);
+			tile_data.thisTile = tile_go;
 		}
 
 		//TODO: Uncomment (When commented, no grid for pathfinding will be generated because it takes a lot of resources!)

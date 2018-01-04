@@ -73,8 +73,7 @@ public abstract class GameCharacter {
 		List<GameTile> path = this.charAI.findPath(oldPosition, newPosition);
 		//Check if the list has at least 1 tile in it
 		if(path.Count > 0) {
-			Debug.Log(this.charInteraction.isReachable(this.movementPoints, path));
-			if(this.charInteraction.isReachable(this.movementPoints, path)){
+			if(this.charAI.isReachable(this.movementPoints, path)){
 				//Set the position
 				this.charModel.setGameObjectPosition(path);
 				//Update position in the interaction class
@@ -83,6 +82,7 @@ public abstract class GameCharacter {
 			}
 		} else {
 			//ERROR
+			Debug.Log("Can't reach this!");
 		}
 	}
 }

@@ -25,6 +25,11 @@ public class CharacterAI {
 	//Tiles in this list have yet to be checked for a route.
 	List<GameTile> unvisited;
 
+
+	//PossibleTiles for graph
+	Dictionary<GameTile, int> possibleTiles;
+	List<GameTile> allReachableTiles;
+
 	//Constructor
 	public CharacterAI() {
 		//Get the game map class instance
@@ -131,6 +136,108 @@ public class CharacterAI {
 		//Return the path in an array of tiles
 		return currentPath;
 
+	}
+
+	//Function that checks if Path to target is within the amount of movement points the unit has
+	public bool isReachable(int mp, List<GameTile> path){
+		//Create variable that will store the amount of points needed to get to target tile and set it to 0
+		int totalPointsNeeded = 0;
+		//Loop through all tiles the unit will traverse
+		for(int i = 1; i < (path.Count - 1); i++) {
+			//Add the points needed to walk through the tile
+			totalPointsNeeded += path[i].TerrainModifier;
+		}
+		//Check if the unit has enough movement points needed to get to target tile
+		if(mp < totalPointsNeeded) {
+			//Can't make this move (out of range)
+			return false;
+		} else {
+			//Can make move
+			return true;
+		}
+	}
+
+	//Function to show what possible moves you have
+	// - Param 1: Source is the tile where the unit starts from
+	// - Param 2: The amount of points the unit has to move
+	public void generatePossibleMovesGraph(GameTile source, int movementPoints){
+		//Create empty list of possible tiles
+		//These tiles, are neighbours from previous tiles, that actually were reachable
+		possibleTiles = new Dictionary<GameTile, int>();
+
+		//Create new list of all reachable tiles
+		//This list only contains tiles, that are actually reachable
+		//We return this list later
+		allReachableTiles = new List<GameTile>();
+
+		bool allPathsChecked = false;
+
+		//Check possible neighbours of the source tile and add them.
+		//Because the source tile does not have a value right now, we don't pass on the totalPoints
+		checkPossibleTiles(source, movementPoints);
+
+		while(allPathsChecked == false) {
+			//Loop through possible tiles to add to the reachable tiles list
+			foreach(GameTile tile in possibleTiles.Keys.ToList()) {
+				//Save already reachable tiles
+				allReachableTiles.Add(tile);
+				tile.thisTile.GetComponent<SpriteRenderer>().color = new Color(0f, 0.8f, 0f, 0.9f);
+			}
+
+			//Loop through new tiles to see if they are reachable for the unit
+			foreach(GameTile tile in possibleTiles.Keys.ToList()) {
+				//Check possible tiles in the neighbour of the given tile in the dictionary
+				checkPossibleTiles(tile, movementPoints, possibleTiles[tile]);
+				//Remove the tile from the possible tiles list
+				//We only do this now, because we needed the reference to find it's neighbours.
+				possibleTiles.Remove(tile);
+			}
+
+			//Checks if there is still any possible tiles left to check
+			if(possibleTiles.Count < 1) {
+				//If there isn't any tiles left to check, stop the while loop
+				allPathsChecked = true;
+			}
+		}
+	}
+
+	//Funtion that checks whether the neighbours of a tile are reachable and passable
+	// - Param 1: The tile we want to check the neighbours of
+	// - Param 2: The max amount of movement points the unit has
+	// - Param 3: The total points already acrued by the previous tile
+	public void checkPossibleTiles(GameTile gameTile, int maxPoints, int totalPoints = 0){
+		//Loop through all neighbour tiles
+		foreach(GameTile tile in gameTile.getNeighbourTiles) {
+			//Check if the tile is passable by any unit
+			if(tile.PassableTile == true) {
+				//Calculate the amount of points needed to get to this tile
+				int tileTotalPoints = totalPoints + tile.TerrainModifier;
+				//Check if the total points isn't over the maximum movement points of the unit is
+				if(tileTotalPoints < maxPoints) {
+					//Check if the tile hasn't already been added to the the possible tiles list
+					if(possibleTiles.ContainsKey(tile) == false) {
+						//Add the tile, with the amount of points needed to reach it, to the possible tiles dictionary
+						possibleTiles.Add(tile, tileTotalPoints);
+					}
+				}
+			}
+		}
+	}
+
+	//Function that removes the overlay on tiles that were reachable by unit
+	//We only remove this selection when user changes selected unit or moves the selected unit
+	public void removePossibleMovesGraph(){
+		//Check if the list with tiles isn't empty
+		if(allReachableTiles.Count > 0) {
+			//Loop through the list of overlayed tiles
+			foreach(GameTile tile in allReachableTiles) {
+				//Set the color back to transparent
+				tile.thisTile.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+			}
+			//Clear the lists to save some memory
+			allReachableTiles.Clear();
+			possibleTiles.Clear();
+		}
 	}
 }
 
