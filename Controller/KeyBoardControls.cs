@@ -29,9 +29,11 @@ public class KeyBoardControls : MonoBehaviour {
 	//Vector 3 of the velocity, which is always Vector3.Zero
 	private Vector3 velocity;
 
-	//TODO: comment
+	//Variable that keeps track of the menu game object
 	private GameObject actionMenu;
+	//Checks if the focus should be on menu
 	private bool inMenu = false;
+	//List of buttons that might need to be accessed
 	List<GameObject> buttonList;
 
 	//The game character that has been selected
@@ -90,8 +92,6 @@ public class KeyBoardControls : MonoBehaviour {
 				cam.transform.position = Vector3.SmoothDamp(cam.transform.position, newPosition, ref velocity, 0.3F);
 			}
 
-
-
 			//Check if enter is pressed (Later also mouse click and tapping the screen)
 			if(Input.GetKeyDown(KeyCode.Return) || Input.GetKey("enter")) {
 				int x = Mathf.RoundToInt(this.transform.position.x);
@@ -107,11 +107,8 @@ public class KeyBoardControls : MonoBehaviour {
 						//No units here, move the selected unit.
 						selectedUnit.moveUnitTo(GameMap._GMinstance.getTileAt(selectedUnit.getXPosition(), selectedUnit.getZPosition()), GameMap._GMinstance.getTileAt(x, z));
 
-
 						//Check if move was valid
 						if(selectedUnit.getCharacterAI().isReachable(GameMap._GMinstance.getTileAt(x,z))) {
-							//TODO: Unit should get the option to click done, attack etc.
-							//TODO: Unit should be frozen after clicking done and unable to move until next turn!
 							inMenu = true;
 							actionMenu.SetActive(true);
 							selectedUnit.showAbilities();
@@ -134,14 +131,14 @@ public class KeyBoardControls : MonoBehaviour {
 					}
 				} else {
 					//When unit has not been selected yet, and the tile that has been pressed enter on has a unit. 
-					if(select != null) {
-							//Set that unit as the selected unit.
-							selectedUnit = select;
-							//Change color of the unit to indicate that the unit has been selected
-							//In the future you might want to make this an glow behind it, instead.
-							selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.blue;
-							//Generate the possible moves there are for the selected unit
-							selectedUnit.getCharacterAI().generatePossibleMovesGraph(GameMap._GMinstance.getTileAt(x, z), selectedUnit.movementPoints);
+					if(select != null && select.isUnitLocked() == false) {
+						//Set that unit as the selected unit.
+						selectedUnit = select;
+						//Change color of the unit to indicate that the unit has been selected
+						//In the future you might want to make this an glow behind it, instead.
+						selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.blue;
+						//Generate the possible moves there are for the selected unit
+						selectedUnit.getCharacterAI().generatePossibleMovesGraph(GameMap._GMinstance.getTileAt(x, z), selectedUnit.movementPoints);
 					}
 				}
 			}
@@ -160,21 +157,21 @@ public class KeyBoardControls : MonoBehaviour {
 		//Checks if the user doesn't go out of bounds
 		if (x < 0 || y < 0 || z < 0 || x > (GameMap._GMinstance.Width - 1) || z > (GameMap._GMinstance.Height - 1)) {
 			//Log error that user want to go out of bounds
-			Debug.LogError ("Out of bounds!");
+			Debug.LogError("Out of bounds!");
 			//Return to prevent the user from moving onto a non existing tile
 			return;
 		}
 
 		//Save the vector as the current position;
-		currentPosition = new Vector3 (x, y, z);
+		currentPosition = new Vector3(x, y, z);
 		//Set the position to the game object's transform
 		this.transform.position = currentPosition;
 		//Calculate and store new position for the camera
-		newPosition = new Vector3 ((x - 9), (y + 12), (z - 9));
+		newPosition = new Vector3((x - 9), (y + 12), (z - 9));
 	}
 
 	//Function that hides action menu and continues game
-	public void updateMenuFocus(){
+	public void updateMenuFocus() {
 		this.actionMenu.SetActive(false);
 	}
 

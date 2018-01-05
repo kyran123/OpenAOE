@@ -49,6 +49,17 @@ public class CharacterInteraction {
 		}
 	}
 
+	//Store whether unit is locked or not
+	private bool isLocked = false;
+	//Property of isLocked
+	public bool IsLocked {
+		get {
+			return isLocked;
+		}
+		set {
+			isLocked = value;
+		}
+	}
 
 	//Store previous Z position of character of this turn
 	int oldZPos;
