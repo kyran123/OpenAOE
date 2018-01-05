@@ -11,6 +11,8 @@ using System;
 using DG.Tweening;
 
 public abstract class GameCharacter {
+	//Get the instance of the ActionMenu stored here, since we want to add abilities to it depending on the situation
+	ActionMenu am;
 
 	//Variable where the Character model class will be stored
 	protected CharacterModel charModel;
@@ -34,6 +36,7 @@ public abstract class GameCharacter {
 
 	//TEMP VARIABLE
 	public int movementPoints = 7;
+	private List<String> abilityList;
 
 	//Constructor
 	// Param 1: name of the data file in string format
@@ -47,6 +50,11 @@ public abstract class GameCharacter {
 		this.charInteraction.z = 5;
 		//Instantiate CharacterAI class
 		this.charAI = new CharacterAI();
+		//Get instance of ActionMenu class
+		am = GameObject.Find("actionMenu").GetComponent<ActionMenu>();
+		//Create new list of abilities
+		//TODO: This list should be dynamically created when data is loaded
+		this.abilityList = new List<string>();
 	}
 		
 	// Properties of the X Position
@@ -61,6 +69,14 @@ public abstract class GameCharacter {
 	public void setZPosition(int z) { 
 		this.charInteraction.z = z; 
 		this.charModel.setGameObjectPosition(this.charInteraction.x, z);
+	}
+
+	//Function that passes through and adds all necessary information for showing update menu
+	public void showAbilities() {
+		this.abilityList.Clear();
+		this.abilityList.Add("Pillage");
+		this.abilityList.Add("Done");
+		this.am.updateMenu(this, abilityList);
 	}
 
 	//Get objects / instances
@@ -84,6 +100,29 @@ public abstract class GameCharacter {
 			//ERROR
 			Debug.Log("Can't reach this!");
 		}
+	}
+
+
+
+
+
+
+
+
+	//Function that will be called when one of the ability buttons is clicked
+	//Done is one of the basic unit abilities
+	public void unitDone(){
+		//TODO: lock unit
+		ActionMenu._instance.removeButtonsFromMenu();
+		KeyBoardControls._instance.updateMenuFocus();
+	}
+
+	//Function that will be called when one of the ability buttons is clicked
+	//Pillage is one of the basic unit abilities
+	public void unitPillage(){
+		//TODO: Actually pillage tile
+		ActionMenu._instance.removeButtonsFromMenu();
+		KeyBoardControls._instance.updateMenuFocus();
 	}
 }
 

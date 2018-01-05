@@ -150,7 +150,6 @@ public class Game : MonoBehaviour {
 			tile_data.thisTile = tile_go;
 		}
 
-		//TODO: Uncomment (When commented, no grid for pathfinding will be generated because it takes a lot of resources!)
 		//Generate graph for pathfinding
 		gameMap.generatePathfindingGraph();
 
