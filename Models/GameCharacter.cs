@@ -34,6 +34,20 @@ public abstract class GameCharacter {
 		return this.charAI;
 	}
 
+
+	//Variable where the Keyboardcontrol class will be stored
+	protected KeyBoardControls kbc;
+	//The property of the variable
+	public KeyBoardControls keyboardControls {
+		get {
+			return kbc;
+		}
+		set {
+			kbc = value;
+		}
+	}
+
+
 	//TEMP VARIABLE
 	public int movementPoints = 7;
 	private List<String> abilityList;
@@ -60,6 +74,7 @@ public abstract class GameCharacter {
 	// Properties of the X Position
 	public int getXPosition() { return this.charInteraction.x; }
 	public void setXPosition(int x) { 
+		this.charInteraction.backupX();
 		this.charInteraction.x = x; 
 		this.charModel.setGameObjectPosition(x, this.charInteraction.z);
 	}
@@ -67,6 +82,7 @@ public abstract class GameCharacter {
 	//Properties of the Y Position
 	public int getZPosition(){ return this.charInteraction.z; }
 	public void setZPosition(int z) { 
+		this.charInteraction.backupZ();
 		this.charInteraction.z = z; 
 		this.charModel.setGameObjectPosition(this.charInteraction.x, z);
 	}
@@ -75,6 +91,7 @@ public abstract class GameCharacter {
 	public void showAbilities() {
 		this.abilityList.Clear();
 		this.abilityList.Add("Pillage");
+		this.abilityList.Add("Undo");
 		this.abilityList.Add("Done");
 		this.am.updateMenu(this, abilityList);
 	}
@@ -92,6 +109,8 @@ public abstract class GameCharacter {
 			if(this.charAI.isReachable(newPosition)) {
 				//Set the position
 				this.charModel.setGameObjectPosition(path);
+				//Set the old position into the previous variables before updating the new one
+				this.charInteraction.backupPosition();
 				//Update position in the interaction class
 				this.charInteraction.x = newPosition.X;
 				this.charInteraction.z = newPosition.Z;
@@ -110,11 +129,33 @@ public abstract class GameCharacter {
 
 
 	//Function that will be called when one of the ability buttons is clicked
-	//Done is one of the basic unit abilities
+	//Done is one of the basic unit movement abilities
 	public void unitDone(){
 		//TODO: lock unit
 		ActionMenu._instance.removeButtonsFromMenu();
-		KeyBoardControls._instance.updateMenuFocus();
+		keyboardControls.updateMenuFocus();
+	}
+
+	//Function that will be called when one of the ability buttons is clicked
+	//Undo is one of the basic unit movement abilities
+	public void unitUndo(){
+		//Reset the position to the previous position
+		this.charInteraction.resetPosition();
+		//Sets the game object position to the restored position
+		this.charModel.setGameObjectPosition(this.charInteraction.x, this.charInteraction.z);
+
+		//Check if the keyboard controls instance is empty
+		if(keyboardControls == null) {
+			//Get instance of KeyboardControls class
+			keyboardControls = KeyBoardControls._instance;
+		}
+		//Set the position of the selector and camera
+		keyboardControls.updatePosition((float)this.charInteraction.x, keyboardControls.transform.position.y, (float)this.charInteraction.z);
+
+		//Remove the buttons from the action menu
+		ActionMenu._instance.removeButtonsFromMenu();
+		//Set the menu focus to false, basically disable it
+		keyboardControls.updateMenuFocus();
 	}
 
 	//Function that will be called when one of the ability buttons is clicked
@@ -122,7 +163,7 @@ public abstract class GameCharacter {
 	public void unitPillage(){
 		//TODO: Actually pillage tile
 		ActionMenu._instance.removeButtonsFromMenu();
-		KeyBoardControls._instance.updateMenuFocus();
+		keyboardControls.updateMenuFocus();
 	}
 }
 

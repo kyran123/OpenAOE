@@ -156,7 +156,7 @@ public class KeyBoardControls : MonoBehaviour {
 
 	//Moves the selector to the new tile.
 	//Params: X, Y and Z coordinates for the selector
-	private void updatePosition(float x, float y, float z){
+	public void updatePosition(float x, float y, float z){
 		//Checks if the user doesn't go out of bounds
 		if (x < 0 || y < 0 || z < 0 || x > (GameMap._GMinstance.Width - 1) || z > (GameMap._GMinstance.Height - 1)) {
 			//Log error that user want to go out of bounds

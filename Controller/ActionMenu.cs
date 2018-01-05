@@ -68,6 +68,9 @@ public class ActionMenu : MonoBehaviour {
 				case "Done":
 					SetListener(ability, menuButton, unit.unitDone);
 					break;
+				case "Undo":
+					SetListener(ability, menuButton, unit.unitUndo);
+					break;
 				case "Pillage":
 					SetListener(ability, menuButton, unit.unitPillage);
 					break;
