@@ -11,9 +11,13 @@ using System;
 using DG.Tweening;
 using System.Xml;
 
-public abstract class GameCharacter {
+public class GameCharacter {
 	//Get the instance of the ActionMenu stored here, since we want to add abilities to it depending on the situation
-	ActionMenu am;
+	protected ActionMenu am;
+	//The getter of the variable
+	public ActionMenu getMenuModel(){
+		return this.am;
+	}
 
 	//Variable where the Character model class will be stored
 	protected CharacterModel charModel;
@@ -82,6 +86,7 @@ public abstract class GameCharacter {
 	// 4. List of minor bonuses (Multipliers for attack, defense etc.)
 	// 5. List of major bonuses (Multipliers for attac,k defense etc.)
 	public string characterAbility { get; protected set; }
+	public List<string> abilities { get; protected set; }
 	public List<string> abilityList { get; protected set; }
 	public string characterType { get; protected set; }
 	public Type gameCharacterType { get; protected set; }
@@ -104,8 +109,9 @@ public abstract class GameCharacter {
 	//Constructor
 	// Param 1: name of the data file in string format
 	public GameCharacter (string type) {
+		string fileName = type + ".xml";
 		//Get Game Character Data from XML file
-		this.getXMLData(type);
+		this.getXMLData(fileName);
 		//Instantiate CharacterModel class
 		this.charModel = new CharacterModel();
 		//Instantiate CharacterInteraction class
@@ -113,6 +119,8 @@ public abstract class GameCharacter {
 		//Set start coordinates of unit (This will depend on scenario later)
 		this.charInteraction.x = 5;
 		this.charInteraction.z = 5;
+		//Set previous Coordinates of unit
+		this.charInteraction.backupPosition();
 		//Instantiate CharacterAI class
 		this.charAI = new CharacterAI();
 		//Get instance of ActionMenu class
@@ -195,12 +203,22 @@ public abstract class GameCharacter {
 		ActionMenu._instance.removeButtonsFromMenu();
 		//Set the menu focus to false, basically disable it
 		this.keyboardControls.updateMenuFocus();
+		//Reselect unit and show movement overlay
+		this.keyboardControls.selectUnit(this.charInteraction.x, this.charInteraction.z);
 	}
 
 	//Function that will be called when one of the ability buttons is clicked
 	//Pillage is one of the basic unit abilities
 	public void unitPillage(){
-		//TODO: Actually pillage tile
+		//TODO: Remove the actual farm
+		ActionMenu._instance.removeButtonsFromMenu();
+		this.keyboardControls.updateMenuFocus();
+	}
+
+	//Function that will be called when the Attack ability button is clicked
+	//Attacks is one of the basic unit abilities
+	public void unitAttack(){
+		//TODO: Attack the unit
 		ActionMenu._instance.removeButtonsFromMenu();
 		this.keyboardControls.updateMenuFocus();
 	}
@@ -231,20 +249,41 @@ public abstract class GameCharacter {
 
 
 
-
 	//Function that passes through and adds all necessary information for showing update menu
 	//Also checks if ability is valid where the unit is placed
 	public void showAbilities() {
-		//TODO: Perform checks if pillage ability is valid
-		//Check if there is a farm on the ground
-		if(true) {
-			this.abilityList.Add("Pillage");
-		} else {
-			this.abilityList.Remove("Pillage");
+		//Clear list of buttons
+		this.abilityList.Clear();
+
+		//Check if there is any unit to attack
+		if(CharacterPikemen.checkIfAttackIsValid(this)) {
+			if(!this.abilityList.Contains("Attack")) this.abilityList.Add("Attack");
 		}
+
+		//Loop through abilities and check if they are valid for this position
+		foreach(string ability in this.abilities) {
+			//Check if the ability is usable in this spot
+			//TODO: check which unit this is and check then if if the ability is available
+			if(CharacterPikemen.checkIfAbilityIsValid(ability)) {
+				//Add the ability to the list
+				if(!this.abilityList.Contains(ability))	this.abilityList.Add(ability);
+			}
+		}
+
+		//Check if there is a farm on the ground
+		if(CharacterPikemen.checkIfAbilityIsValid("Pillage")) {
+			if(!this.abilityList.Contains("Pillage")) this.abilityList.Add("Pillage");
+		}
+
+		//Add the undo and done as last
+		//Always checking if the ability hasn't already been added
+		if(!this.abilityList.Contains("Undo")) this.abilityList.Add("Undo");
+		if(!this.abilityList.Contains("Done")) this.abilityList.Add("Done");
+
 		//Show the actual menu on screen
 		this.am.updateMenu(this, abilityList);
 	}
+
 
 	//Retrieves all data from the XML file by type
 	private void getXMLData(string cType){
@@ -302,10 +341,10 @@ public abstract class GameCharacter {
 		this.characterAbility = rawXML.GetElementsByTagName("special")[0].ChildNodes[0].Value;
 
 		//Create new ability List
+		this.abilities = new List<string>();
 		this.abilityList = new List<string>();
 		//Add basic abilities
-		this.abilityList.Add("Undo");
-		this.abilityList.Add("Done");
+		this.abilities.Add("Attack");
 
 		//Get the list of ability tags
 		XmlNodeList abilityList = rawXML.GetElementsByTagName ("abilities");
@@ -315,7 +354,7 @@ public abstract class GameCharacter {
 			//Check if the added ability node is actually an ability
 			if(ability.Name == "ability") {
 				//Add the ability to the list
-				this.abilityList.Add(ability.InnerXml);
+				this.abilities.Add(ability.InnerXml);
 			}
 		}
 

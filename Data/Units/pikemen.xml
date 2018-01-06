@@ -12,7 +12,7 @@
 	</base>
 	<special>antiCavalry</special>
 	<abilities>
-		<ability>Pillage</ability>
+		<ability>Drill</ability>
 	</abilities>
 	<isunlocked>true</isunlocked>
 	<costtounlock>1500</costtounlock>

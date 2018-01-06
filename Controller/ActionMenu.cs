@@ -39,6 +39,7 @@ public class ActionMenu : MonoBehaviour {
 
 		//Clear buttons list
 		this.buttons.Clear();
+		this.removeButtonsFromMenu();
 
 		//Set size of button container
 		this.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 0);
@@ -65,6 +66,9 @@ public class ActionMenu : MonoBehaviour {
 			Button menuButton = menuButtonObject.GetComponent<Button>();
 			//Check what the ability is and call the SetListener function
 			switch(ability){
+				case "Attack": 
+					SetListener(ability, menuButton, KeyBoardControls._instance.setSelectMode);
+					break;
 				case "Done":
 					SetListener(ability, menuButton, unit.unitDone);
 					break;

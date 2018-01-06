@@ -29,12 +29,20 @@ public class KeyBoardControls : MonoBehaviour {
 	//Vector 3 of the velocity, which is always Vector3.Zero
 	private Vector3 velocity;
 
+	//Variables to keep track of little pieces of information that get re-used regularly
+	private int attackRange;
+	private int selectableIndex;
+
 	//Variable that keeps track of the menu game object
 	private GameObject actionMenu;
 	//Checks if the focus should be on menu
 	private bool inMenu = false;
+	//Checks if the focus should be on selecting an unit to attack, debuff or buff.
+	private bool selectMode = false;
 	//List of buttons that might need to be accessed
 	List<GameObject> buttonList;
+	//List of selectable units within range
+	List<GameCharacter> selectable;
 
 	//The game character that has been selected
 	protected GameCharacter selectedUnit;
@@ -52,103 +60,175 @@ public class KeyBoardControls : MonoBehaviour {
 		//Add this class to the instance variable
 		KeyBoardControls._instance = this;
 		//Get the list of action buttons
-		buttonList = ActionMenu._instance.buttons;
+		this.buttonList = ActionMenu._instance.buttons;
+		//initialize selectable list
+		this.selectable = new List<GameCharacter>();
 	}
 	
 	// Update is called once per frame
 	void Update() {
-		
-		//Check if focus is on menu or game
-		if(!inMenu) {
+		//Check if focus is on movement or selection
+		if(!this.selectMode) {
+
+			//Check if focus is on menu or game
+			if(!this.inMenu) {
 			
-			//Check what input is given and send the new position to the updatePosition function
-			if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A)) {
-				//Save the original position of the selector
-				oldPosition = this.transform.position;
-				//Call update position function with the updated position
-				updatePosition(oldPosition.x, oldPosition.y, (oldPosition.z + 1));
-			}
-			if(Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) {
-				//Save the original position of the selector
-				oldPosition = this.transform.position;
-				//Call update position function with the updated position
-				updatePosition(oldPosition.x, oldPosition.y, (oldPosition.z - 1));
-			}
-			if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) {
-				//Save the original position of the selector
-				oldPosition = this.transform.position;
-				//Call update position function with the updated position
-				updatePosition((oldPosition.x + 1), oldPosition.y, oldPosition.z);
-			}
-			if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)) {
-				//Save the original position of the selector
-				oldPosition = this.transform.position;
-				//Call update position function with the updated position
-				updatePosition((oldPosition.x - 1), oldPosition.y, oldPosition.z);
-			}
-			//Check if the old position is the same as the new one.
-			if(Vector3.Distance(oldPosition, newPosition) > 1.0) {
-				//If the 2 positions aren't the same, move the position of the camera to follow the selector
-				cam.transform.position = Vector3.SmoothDamp(cam.transform.position, newPosition, ref velocity, 0.3F);
-			}
+				//Check what input is given and send the new position to the updatePosition function
+				if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A)) {
+					//Save the original position of the selector
+					this.oldPosition = this.transform.position;
+					//Call update position function with the updated position
+					updatePosition(this.oldPosition.x, this.oldPosition.y, (this.oldPosition.z + 1));
+				}
+				if(Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) {
+					//Save the original position of the selector
+					this.oldPosition = this.transform.position;
+					//Call update position function with the updated position
+					updatePosition(this.oldPosition.x, this.oldPosition.y, (this.oldPosition.z - 1));
+				}
+				if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) {
+					//Save the original position of the selector
+					this.oldPosition = this.transform.position;
+					//Call update position function with the updated position
+					updatePosition((this.oldPosition.x + 1), this.oldPosition.y, this.oldPosition.z);
+				}
+				if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)) {
+					//Save the original position of the selector
+					this.oldPosition = this.transform.position;
+					//Call update position function with the updated position
+					updatePosition((this.oldPosition.x - 1), this.oldPosition.y, this.oldPosition.z);
+				}
+				//Check if the old position is the same as the new one.
+				if(Vector3.Distance(this.oldPosition, this.newPosition) > 1.0) {
+					//If the 2 positions aren't the same, move the position of the camera to follow the selector
+					this.cam.transform.position = Vector3.SmoothDamp(this.cam.transform.position, this.newPosition, ref this.velocity, 0.3F);
+				}
 
-			//Check if enter is pressed (Later also mouse click and tapping the screen)
-			if(Input.GetKeyDown(KeyCode.Return) || Input.GetKey("enter")) {
-				int x = Mathf.RoundToInt(this.transform.position.x);
-				int z = Mathf.RoundToInt(this.transform.position.z);
+				//Check if enter is pressed (Later also mouse click and tapping the screen)
+				if(Input.GetKeyDown(KeyCode.Return) || Input.GetKey("enter")) {
+					int x = Mathf.RoundToInt(this.transform.position.x);
+					int z = Mathf.RoundToInt(this.transform.position.z);
 
-				//Select unit or building that is in that tile
-				GameCharacter select = Game.getCharacterOnPosition(x, z);
+					//Select unit or building that is in that tile
+					GameCharacter select = Game.getCharacterOnPosition(x, z);
 
-				//If there has no unit been selected yet
-				if(selectedUnit != null) {
-					//Check if the tile that has been selected does have any units (Later also buildings)
-					if(select == null) {
-						//No units here, move the selected unit.
-						selectedUnit.moveUnitTo(GameMap._GMinstance.getTileAt(selectedUnit.getXPosition(), selectedUnit.getZPosition()), GameMap._GMinstance.getTileAt(x, z));
+					//If there has no unit been selected yet
+					if(this.selectedUnit != null) {
+						//Check if the tile that has been selected does have any units (Later also buildings)
+						if(select == null) {
+							//No units here, move the selected unit.
+							this.selectedUnit.moveUnitTo(GameMap._GMinstance.getTileAt(selectedUnit.getXPosition(), selectedUnit.getZPosition()), GameMap._GMinstance.getTileAt(x, z));
 
-						//Check if move was valid
-						if(selectedUnit.getCharacterAI().isReachable(GameMap._GMinstance.getTileAt(x,z))) {
-							inMenu = true;
-							actionMenu.SetActive(true);
-							selectedUnit.showAbilities();
-						}
-						//Remove the graph overlayed on the tiles
-						selectedUnit.getCharacterAI().removePossibleMovesGraph();
+							//Check if move was valid
+							if(this.selectedUnit.getCharacterAI().isReachable(GameMap._GMinstance.getTileAt(x, z))) {
+								//Set focus to menu
+								this.inMenu = true;
+								//Set menu to active
+								this.actionMenu.SetActive(true);
+								//Show buttons on menu
+								this.selectedUnit.showAbilities();
+							}
+							//Remove the graph overlayed on the tiles
+							this.selectedUnit.getCharacterAI().removePossibleMovesGraph();
 
-					    //Set the color back to white, to indicate that it isn't selected anymore
-					    selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.white;
-						//Remove all units from variables
-						selectedUnit = null;
+							//Set the color back to white, to indicate that it isn't selected anymore
+							this.selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.white;
 						
 
-					} else if(select.getXPosition() == selectedUnit.getXPosition() && select.getZPosition() == selectedUnit.getZPosition()) {
-						//Same unit selected! Attack? powers?
-					} else if(Game.getCharacterOnPosition(Mathf.RoundToInt(this.transform.position.x), Mathf.RoundToInt(this.transform.position.z)) != null) {
-						//Select the new unit
-						selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.white;
-						selectedUnit = null;
-					}
-				} else {
-					//When unit has not been selected yet, and the tile that has been pressed enter on has a unit. 
-					if(select != null && select.isUnitLocked() == false) {
-						//Set that unit as the selected unit.
-						selectedUnit = select;
-						//Change color of the unit to indicate that the unit has been selected
-						//In the future you might want to make this an glow behind it, instead.
-						selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.blue;
-						//Generate the possible moves there are for the selected unit
-						selectedUnit.getCharacterAI().generatePossibleMovesGraph(GameMap._GMinstance.getTileAt(x, z), selectedUnit.movementPoints);
+						} else if(select.getXPosition() == this.selectedUnit.getXPosition() && select.getZPosition() == this.selectedUnit.getZPosition()) {
+							//Same unit selected! Attack? powers?
+							this.inMenu = true;
+							this.actionMenu.SetActive(true);
+							this.selectedUnit.showAbilities();
+						} else if(Game.getCharacterOnPosition(Mathf.RoundToInt(this.transform.position.x), Mathf.RoundToInt(this.transform.position.z)) != null) {
+							//Select the new unit
+							this.selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.white;
+							this.selectedUnit = null;
+						}
+					} else {
+						//When unit has not been selected yet, and the tile that has been pressed enter on has a unit. 
+						if(select != null && select.isUnitLocked() == false) {
+							//Set that unit as the selected unit.
+							this.selectedUnit = select;
+							this.attackRange = this.selectedUnit.attackRange;
+							this.selectUnit(x, z);
+						}
 					}
 				}
-			}
 
+			} 
+		} else {
+			//Prevents this from being called prematurely
+			if(this.selectableIndex < 9000) {
+				
+				//When left arrow, A, down arrow or S is pressed
+				if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)) {
+					//Check if index is valid
+					if(this.selectableIndex > 0) {
+						//Increase index
+						this.selectableIndex--;
+					} else {
+						//Reset index
+						this.selectableIndex = (this.selectable.Count - 1);
+					}
+					//highlight the newly selected unit
+					this.highlightUnit();
+				}
+				//When right arrow, D, up arrow or W is pressed
+				if(Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) {
+					//Check if index is valid
+					if(this.selectableIndex < (this.selectable.Count - 1)) {
+						//Increase index
+						this.selectableIndex++;
+					} else {
+						//Reset index
+						this.selectableIndex = 0;
+					}
+					//highlight the newly selected unit
+					this.highlightUnit();
+				}
+
+				//When enter is pressed
+				if(Input.GetKeyDown(KeyCode.Return) || Input.GetKey("enter")) {
+					//Set the target unit to red
+					this.selectable[this.selectableIndex].getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.red;
+					//Lock the unit that made the move
+					this.selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.gray;
+					this.selectedUnit.setUnitLocked(true);
+					//Reset the modes back to normal movement
+					this.inMenu = false;
+					this.selectMode = false;
+					this.selectedUnit = null;
+				}
+
+			} else {
+				//Set the selectableIndex to something that is valid
+				this.selectableIndex = 0;
+				this.highlightUnit();
+			}
 		}
 
 		//set inMenu variable to false when the action menu isn't active anymore
 		if(!this.actionMenu.activeSelf) {
 			this.inMenu = false;
 		}
+	}
+
+
+	//Function that interacts with the units for selecting
+	public void highlightUnit() {
+		//Clear all units from color
+		foreach(GameCharacter unit in this.selectable) {
+			unit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.white;
+		}
+		//Set cursor to the position of the selectable unit
+		this.transform.position = new Vector3(
+			this.selectable[this.selectableIndex].getXPosition(), 
+			this.transform.position.y, 
+			this.selectable[this.selectableIndex].getZPosition()
+		);
+
+		this.selectable[this.selectableIndex].getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.yellow;
 	}
 
 	//Moves the selector to the new tile.
@@ -163,16 +243,62 @@ public class KeyBoardControls : MonoBehaviour {
 		}
 
 		//Save the vector as the current position;
-		currentPosition = new Vector3(x, y, z);
+		this.currentPosition = new Vector3(x, y, z);
 		//Set the position to the game object's transform
 		this.transform.position = currentPosition;
 		//Calculate and store new position for the camera
-		newPosition = new Vector3((x - 9), (y + 12), (z - 9));
+		this.newPosition = new Vector3((x - 9), (y + 12), (z - 9));
 	}
 
 	//Function that hides action menu and continues game
 	public void updateMenuFocus() {
 		this.actionMenu.SetActive(false);
+	}
+
+	public void setSelectMode() {
+		//Clear selectable list
+		this.selectable.Clear();
+
+		//Set select mode to true
+		this.selectMode = true;
+
+		//Hide menu
+		updateMenuFocus();
+
+		//Create the list of attackable units
+		if(this.attackRange <= 1) {
+			//Check for units in the 4 tiles around the unit
+			if(Game.getCharacterOnPosition((this.selectedUnit.getXPosition() + 1), this.selectedUnit.getZPosition()) != null) {
+				//Add unit to list of selectables
+				this.selectable.Add(Game.getCharacterOnPosition((this.selectedUnit.getXPosition() + 1), this.selectedUnit.getZPosition()));
+			}
+			if(Game.getCharacterOnPosition((this.selectedUnit.getXPosition() - 1), this.selectedUnit.getZPosition()) != null) {
+				//Add unit to list of selectables
+				this.selectable.Add(Game.getCharacterOnPosition((this.selectedUnit.getXPosition() - 1), this.selectedUnit.getZPosition()));
+			}
+			if(Game.getCharacterOnPosition(this.selectedUnit.getXPosition(), (this.selectedUnit.getZPosition() + 1)) != null) {
+				//Add unit to list of selectables
+				this.selectable.Add(Game.getCharacterOnPosition(this.selectedUnit.getXPosition(), (this.selectedUnit.getZPosition() + 1)));
+			}
+			if(Game.getCharacterOnPosition(this.selectedUnit.getXPosition(), (this.selectedUnit.getZPosition() - 1)) != null) {
+				//Add unit to list of selectables
+				this.selectable.Add(Game.getCharacterOnPosition(this.selectedUnit.getXPosition(), (this.selectedUnit.getZPosition() - 1)));
+			}
+
+			//Set the index to start of with
+			this.selectableIndex = 9999;
+
+		} else if(this.attackRange > 1) {
+			//Check the grid of the attack size for units
+		}
+	}
+
+	public void selectUnit(int x, int z) {
+		//Change color of the unit to indicate that the unit has been selected
+		//In the future you might want to make this an glow behind it, instead.
+		this.selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.blue;
+		//Generate the possible moves there are for the selected unit
+		this.selectedUnit.getCharacterAI().generatePossibleMovesGraph(GameMap._GMinstance.getTileAt(x, z), selectedUnit.movementPoints);
 	}
 
 	//TODO: Change camera settings like:

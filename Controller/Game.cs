@@ -153,15 +153,26 @@ public class Game : MonoBehaviour {
 		//Generate graph for pathfinding
 		gameMap.generatePathfindingGraph();
 
-		//
-		//TEST
-		//
+		//------//
+		// TEST //
+		//------//
 		//Generate 1 character pikemen
-		GameCharacter pikemen1 = new CharacterPikemen();
+		GameCharacter pikemen1 = new GameCharacter("Pikemen");
+		GameCharacter unit = new GameCharacter("Pikemen");
+		unit.setXPosition(6);
+		unit.setZPosition(6);
+		GameCharacter unit2 = new GameCharacter("Pikemen");
+		unit2.setXPosition(7);
+		unit2.setZPosition(5);
 		//Create new List
 		unitList = new List<GameCharacter>();
 		//Add pikemen to list
 		unitList.Add (pikemen1);
+		unitList.Add(unit);
+		unitList.Add(unit2);
+		//----------//
+		// END TEST //
+		//----------//
 	}
 
 	// Update is called once per frame
@@ -188,6 +199,16 @@ public class Game : MonoBehaviour {
 		//Return null when no unit has been found.
 		//This often means that the user wants to move an already selected unit.
 		return null;
+	}
+
+
+	//Function that gets the building based on location
+	//So when the menu is created, the Character class will call this to check if there are any pillagable buildings on this tile
+	// - Param 1: X coordinate
+	// - Param 2: Z coordinate
+	//TODO: Actually make buildings possible
+	public static bool getBuildingOnPosition(int x, int z) {
+		return true;
 	}
 
 	//Function that gets called as soon as the type of a tile changes.
