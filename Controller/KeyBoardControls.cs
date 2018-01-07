@@ -137,17 +137,34 @@ public class KeyBoardControls : MonoBehaviour {
 
 						} else if(select.getXPosition() == this.selectedUnit.getXPosition() && select.getZPosition() == this.selectedUnit.getZPosition()) {
 							//Same unit selected! Attack? powers?
+							//Set inMenu variable to true, to indicate that the focus should be on
 							this.inMenu = true;
+							//Set menu to visible
 							this.actionMenu.SetActive(true);
+							//Show abilities of unit on menu
 							this.selectedUnit.showAbilities();
+							//Remove the graph of moves
+							this.selectedUnit.getCharacterAI().removePossibleMovesGraph();
 
 						} else if(Game.getCharacterOnPosition(Mathf.RoundToInt(this.transform.position.x), Mathf.RoundToInt(this.transform.position.z)) != null) {
 							//Select the new unit
 							if(this.selectedUnit.isUnitLocked()) {
+								//Set unit color to gray
 								this.selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.gray;
 							} else {
+								//Set unit color to white
 								this.selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.white;
 							}
+							//Remove the graph of moves
+							this.selectedUnit.getCharacterAI().removePossibleMovesGraph();
+							//Set position of selector back to original position
+							this.transform.localPosition = new Vector3(
+								this.selectedUnit.getCharacterObject().transform.position.x,
+								this.transform.position.y,
+								this.selectedUnit.getCharacterObject().transform.position.z
+							);
+							//Empty the selected unit from the variable
+							//So the user has to select the unit again
 							this.selectedUnit = null;
 						}
 					} else {
@@ -155,7 +172,9 @@ public class KeyBoardControls : MonoBehaviour {
 						if(select != null && select.isUnitLocked() == false) {
 							//Set that unit as the selected unit.
 							this.selectedUnit = select;
+							//Get the attack range of the unit
 							this.attackRange = this.selectedUnit.attackRange;
+							//Call select unit
 							this.selectUnit(x, z);
 						}
 					}
@@ -236,7 +255,7 @@ public class KeyBoardControls : MonoBehaviour {
 			this.transform.position.y, 
 			this.selectable[this.selectableIndex].getZPosition()
 		);
-
+		//Set the color to yellow
 		this.selectable[this.selectableIndex].getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.yellow;
 	}
 
@@ -302,6 +321,7 @@ public class KeyBoardControls : MonoBehaviour {
 		}
 	}
 
+	//Function that selects unit and generates a moves graph for it
 	public void selectUnit(int x, int z) {
 		//Change color of the unit to indicate that the unit has been selected
 		//In the future you might want to make this an glow behind it, instead.

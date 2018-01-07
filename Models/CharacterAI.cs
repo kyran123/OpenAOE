@@ -176,7 +176,7 @@ public class CharacterAI {
 			foreach(GameTile tile in possibleTiles.Keys.ToList()) {
 				//Save already reachable tiles
 				allReachableTiles.Add(tile);
-				tile.tileOverlay.GetComponent<SpriteRenderer>().color = new Color(0.7f, 0.88f, 0f, 0.22f);
+				tile.tileOverlay.GetComponent<SpriteRenderer>().color = new Color(0.78f, 0.88f, 0f, 0.4f);
 			}
 
 			//Loop through new tiles to see if they are reachable for the unit

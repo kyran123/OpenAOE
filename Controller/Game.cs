@@ -25,30 +25,7 @@ public class Game : MonoBehaviour {
 	//Grass - #3CC453
 	//Tree (Bright green) - #40C224
 	//Tree (Dark) - #38A61F
-	public Sprite MountainsSprite;
-	public Sprite MountainsSprite1;
-	public Sprite MountainsSprite2;
-	public Sprite GrassSprite;
-	public Sprite GrassSprite1;
-	public Sprite GrassSprite2;
-	public Sprite ForestSprite;
-	public Sprite ForestSprite1;
-	public Sprite ForestSprite2;
-	public Sprite RiverSprite;
-	public Sprite RiverSprite1;
-	public Sprite RiverSprite2;
-	public Sprite SeaSprite;
-	public Sprite SeaSprite1;
-	public Sprite SeaSprite2;
-	public Sprite RoadSprite;
-	public Sprite RoadSprite1;
-	public Sprite RoadSprite2;
-	public Sprite DesertSprite;
-	public Sprite DesertSprite1;
-	public Sprite DesertSprite2;
-	public Sprite HillsSprite;
-	public Sprite HillsSprite1;
-	public Sprite HillsSprite2;
+	public Sprite tileOverlay;
 	//Store instance of the map
 	private GameMap gameMap;
 	//Store instances of GameCharacters
@@ -140,14 +117,14 @@ public class Game : MonoBehaviour {
 			//Flip overlay
 			tile_data.tileOverlay.transform.Rotate(-90, 0, 0);
 			//Set the scale of the object
-			tile_data.tileOverlay.transform.localScale = new Vector3(8f, 8f, 1f);
+			tile_data.tileOverlay.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
 			//Set the position of the object
-			tile_data.tileOverlay.transform.localPosition = new Vector3(0f, 1.1f, 0f);
+			tile_data.tileOverlay.transform.localPosition = new Vector3(0f, 1.4f, 0f);
 
 			//Add sprite renderer to the tileoverlay object
 			SpriteRenderer tile_sr = tile_data.tileOverlay.AddComponent<SpriteRenderer>();
 			//Set sprite
-			tile_sr.sprite = GrassSprite;
+			tile_sr.sprite = tileOverlay;
 			//Set drawmode, because otherwise the tile would be too small (0.125)
 			tile_sr.drawMode = SpriteDrawMode.Tiled;
 			//Set the color to invisible so you don't see the overlay until the color is actually changed
