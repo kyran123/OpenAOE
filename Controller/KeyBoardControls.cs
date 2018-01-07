@@ -45,7 +45,7 @@ public class KeyBoardControls : MonoBehaviour {
 	List<GameCharacter> selectable;
 
 	//The game character that has been selected
-	protected GameCharacter selectedUnit;
+	public GameCharacter selectedUnit { get; set; }
 
 	// Use this for initialization
 	void Start() {
@@ -140,9 +140,14 @@ public class KeyBoardControls : MonoBehaviour {
 							this.inMenu = true;
 							this.actionMenu.SetActive(true);
 							this.selectedUnit.showAbilities();
+
 						} else if(Game.getCharacterOnPosition(Mathf.RoundToInt(this.transform.position.x), Mathf.RoundToInt(this.transform.position.z)) != null) {
 							//Select the new unit
-							this.selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.white;
+							if(this.selectedUnit.isUnitLocked()) {
+								this.selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.gray;
+							} else {
+								this.selectedUnit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.white;
+							}
 							this.selectedUnit = null;
 						}
 					} else {
@@ -219,7 +224,11 @@ public class KeyBoardControls : MonoBehaviour {
 	public void highlightUnit() {
 		//Clear all units from color
 		foreach(GameCharacter unit in this.selectable) {
-			unit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.white;
+			if(unit.isUnitLocked()) {
+				unit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.gray;
+			} else {
+				unit.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.white;
+			}
 		}
 		//Set cursor to the position of the selectable unit
 		this.transform.position = new Vector3(

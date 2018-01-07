@@ -29,8 +29,6 @@ public class CharacterModel {
 	//Creates empty game object and returns it
 	public GameObject createEmptyGameObject(){
 		GameObject goModel = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-		//TODO: Get name from GameCharacter class
-		goModel.name = "Pikemen";
 		return goModel;
 	}
 
@@ -44,7 +42,7 @@ public class CharacterModel {
 	public void setGameObjectPosition(int x, int z){
 		float xPosition = (float)x;
 		float zPosition = (float)z;
-		this.unitModel.transform.DOMove(new Vector3(xPosition, 0.5f, zPosition), 0.2f);
+		this.unitModel.transform.DOMove(new Vector3(xPosition, 0.8f, zPosition), 0.2f);
 	}
 
 	//Move unit on map
@@ -59,7 +57,7 @@ public class CharacterModel {
 			float xPosition = (float)nextTile.X;
 			float zPosition = (float)nextTile.Z;
 			//Set the object position to the next tile in the list
-			movementSequence.Append(this.unitModel.transform.DOMove(new Vector3(xPosition, 0.5f, zPosition), 0.2f));
+			movementSequence.Append(this.unitModel.transform.DOMove(new Vector3(xPosition, 0.8f, zPosition), 0.2f));
 		}
 	}
 }

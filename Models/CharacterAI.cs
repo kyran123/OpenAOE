@@ -59,7 +59,8 @@ public class CharacterAI {
 
 		//Initialize everything to have INFINITY distance, since we don't know any better right now
 		foreach(GameTile node in this.gameMap.getTileArray()) {
-			//If the node isn't the srouce
+				
+			//If the node isn't the source
 			if(node != source) {
 				//Set the distance to infinity (Highest number possible)
 				//This is reasonable, because some tiles might not be accessable by some units
@@ -67,9 +68,11 @@ public class CharacterAI {
 				//Set previous to empty, because we don't know which is the previous yet
 				previousTile[node] = null;
 			}
+
 			//Add all GameTile nodes to the qeue.
 			//We loop through the qeue, so go through all tiles, to figure out the shortest path
 			unvisited.Add(node);
+
 		}
 
 		//Loop through the unvisited qeue as long as it has 1 or more items in it
@@ -173,7 +176,7 @@ public class CharacterAI {
 			foreach(GameTile tile in possibleTiles.Keys.ToList()) {
 				//Save already reachable tiles
 				allReachableTiles.Add(tile);
-				tile.thisTile.GetComponent<SpriteRenderer>().color = new Color(0f, 0.8f, 0f, 0.9f);
+				tile.tileOverlay.GetComponent<SpriteRenderer>().color = new Color(0.7f, 0.88f, 0f, 0.22f);
 			}
 
 			//Loop through new tiles to see if they are reachable for the unit
@@ -224,7 +227,7 @@ public class CharacterAI {
 			//Loop through the list of overlayed tiles
 			foreach(GameTile tile in allReachableTiles) {
 				//Set the color back to transparent
-				tile.thisTile.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+				tile.tileOverlay.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
 			}
 			//Clear the lists to save some memory
 			allReachableTiles.Clear();

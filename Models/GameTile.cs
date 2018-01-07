@@ -16,6 +16,7 @@ public class GameTile {
 
 	//Object of GameTile
 	public GameObject thisTile { get; set; }
+	public GameObject tileOverlay { get; set; }
 
 	//The type of the game tile. 
 	//This is only for the type of ground, not the buildings or ores above it.

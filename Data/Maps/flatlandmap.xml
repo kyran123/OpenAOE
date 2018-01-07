@@ -545,12 +545,12 @@
 		<Tile>
 			<X>5</X>
 			<Y>7</Y>
-			<Type>Road</Type>
+			<Type>Desert</Type>
 		</Tile>
 		<Tile>
 			<X>5</X>
 			<Y>8</Y>
-			<Type>Road</Type>
+			<Type>Desert</Type>
 		</Tile>
 		<Tile>
 			<X>5</X>
@@ -940,7 +940,7 @@
 		<Tile>
 			<X>9</X>
 			<Y>6</Y>
-			<Type>Road</Type>
+			<Type>Desert</Type>
 		</Tile>
 		<Tile>
 			<X>9</X>

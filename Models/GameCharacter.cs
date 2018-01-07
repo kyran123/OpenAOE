@@ -114,6 +114,7 @@ public class GameCharacter {
 		this.getXMLData(fileName);
 		//Instantiate CharacterModel class
 		this.charModel = new CharacterModel();
+		this.getCharacterObject().name = this.characterName;
 		//Instantiate CharacterInteraction class
 		this.charInteraction = new CharacterInteraction();
 		//Set start coordinates of unit (This will depend on scenario later)
@@ -188,6 +189,10 @@ public class GameCharacter {
 		this.keyboardControls.updateMenuFocus();
 		//Change color of the unit
 		this.charModel.getGameObject().GetComponent<MeshRenderer>().material.color = Color.gray;
+		//Remove graph
+		this.charAI.removePossibleMovesGraph();
+		//Set selected unit to null
+		this.keyboardControls.selectedUnit = null;
 	}
 
 	//Function that will be called when one of the ability buttons is clicked

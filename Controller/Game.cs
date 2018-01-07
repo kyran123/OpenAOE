@@ -111,46 +111,59 @@ public class Game : MonoBehaviour {
 				}
 			}
 
-			//Create new emtpy game object
-			GameObject tile_go = new GameObject ();
-			//Give object name
-			tile_go.name = "Tile_" + xPos + "_" + yPos;
+			//Gets the tile class based on the X and Y position
+			gameMap.setTile(xPos, yPos);
+
+			GameTile tile_data = gameMap.getTileAt(xPos, yPos);
+
+			//Sets the actual tile type
+			tile_data.setTileType(tileType);
+
+			OnTileTypeChange(tile_data);
 
 			//Set position of tile
 			//It's position is based of the X and Z axes because this is supposed to be a flat board in a 3D build!
 			//This means the camera is creating the Isometric view by angling it 50 degrees on the X and 45 on the Y axes.
-			tile_go.transform.position = new Vector3 (xPos, 0, yPos);
-			tile_go.transform.SetParent (this.transform, true);
+			tile_data.thisTile.transform.position = new Vector3(tile_data.X, 0, tile_data.Z);
+			tile_data.thisTile.transform.SetParent(this.transform, true);
+			//Give object name
+			tile_data.thisTile.name = "Tile_" + tile_data.X + "_" + tile_data.Z;
 
-			//Set Angle of the tile
-			//The tile looks like it is standing up in the standard angle and we want it to lay down flat.
-			//We rotate by the X coordinate by 90 degrees, although this can be done on the Y axes as well.
-			Vector3 rotationVector = transform.rotation.eulerAngles;
-			rotationVector.x = 90;
-			tile_go.transform.rotation = Quaternion.Euler(rotationVector);
+			//Set overlay object
+			//This object is only visible when there is something to overlay.
+			//Think of attacks, moves etc.
+			tile_data.tileOverlay = new GameObject();
+			//Set name of overlay Objects
+			tile_data.tileOverlay.name = "Overlay";
+			//Set the parent of the object
+			tile_data.tileOverlay.transform.SetParent(tile_data.thisTile.transform);
+			//Flip overlay
+			tile_data.tileOverlay.transform.Rotate(-90, 0, 0);
+			//Set the scale of the object
+			tile_data.tileOverlay.transform.localScale = new Vector3(8f, 8f, 1f);
+			//Set the position of the object
+			tile_data.tileOverlay.transform.localPosition = new Vector3(0f, 1.1f, 0f);
 
-			//Add a new sprite renderer module on the game object and store it in a variable
-			//The sprite renderer is used to show all tile spirtes in a seperate function
-			SpriteRenderer tile_sr = tile_go.AddComponent<SpriteRenderer> ();
-
-			//Call the function in the GameMap class, that creates the actual tiles in code.
-			//NOTE: Tile type is not set here yet! That happens in the setTileType function!!!
-			gameMap.setTile (xPos, yPos);
-
-			//Gets the tile class based on the X and Y position
-			GameTile tile_data = gameMap.getTileAt (xPos, yPos);
+			//Add sprite renderer to the tileoverlay object
+			SpriteRenderer tile_sr = tile_data.tileOverlay.AddComponent<SpriteRenderer>();
+			//Set sprite
+			tile_sr.sprite = GrassSprite;
+			//Set drawmode, because otherwise the tile would be too small (0.125)
+			tile_sr.drawMode = SpriteDrawMode.Tiled;
+			//Set the color to invisible so you don't see the overlay until the color is actually changed
+			tile_sr.color = new Color(1f, 1f, 1f, 0f);
 
 			//Register a callback to the 'OnTileTypeChange' function
 			tile_data.registerTileTypeChangedCallback((tile) => {
-				OnTileTypeChange(tile, tile_sr);
+				OnTileTypeChange(tile_data);
 			});
 
-			//Sets the actual tile type
-			tile_data.setTileType (tileType);
-			tile_data.thisTile = tile_go;
+
 		}
 
 		//Generate graph for pathfinding
+		//Technically it finds all the neighbours of every tile and saves those
+		//Because dijkstra's algorithm requires for each tile to know it's neighbours
 		gameMap.generatePathfindingGraph();
 
 		//------//
@@ -213,149 +226,76 @@ public class Game : MonoBehaviour {
 
 	//Function that gets called as soon as the type of a tile changes.
 	// - Param 1: Tile_data is basically a reference to the tile class
-	// - Param 2: The sprite renderer so we can add the sprite to it
-	void OnTileTypeChange(GameTile tile_data, SpriteRenderer tile_sr){
+	void OnTileTypeChange(GameTile tile_data){
 		//Every if statement checks if the data type is which one and set the appropriote sprite
 		if (tile_data.Type == GameTile.TileType.Mountains) {
-			//Random number
-			int rand = UnityEngine.Random.Range(0, 3);
-			//Sets mountain sprite
-			switch (rand) {
-				case 0:
-					tile_sr.sprite = MountainsSprite;
-					break;
-				case 1:
-					tile_sr.sprite = MountainsSprite1;
-					break;
-				case 2:
-					tile_sr.sprite = MountainsSprite2;
-					break;
-			}
+			//Grab the prefab from the resources folder and store it in thisTile variable
+			tile_data.thisTile = Instantiate(Resources.Load("dirt-low", typeof(GameObject))) as GameObject;
+			//Set the scale of the object
+			tile_data.thisTile.transform.localScale = new Vector3(0.125f, 0.12f, 0.125f);
+
 			//Terrain modifier sets the amount of movement the character needs to move through the tile
 			tile_data.TerrainModifier = 4;
 		} else if (tile_data.Type == GameTile.TileType.Grass) {
-			//Random number
-			int rand = UnityEngine.Random.Range(0, 3);
-			//Set grass sprite
-			switch (rand) {
-				case 0:
-					tile_sr.sprite = GrassSprite;
-					break;
-				case 1:
-					tile_sr.sprite = GrassSprite1;
-					break;
-				case 2:
-					tile_sr.sprite = GrassSprite2;
-					break;
-			}
+			//Grab the prefab from the resources folder and store it in thisTile variable
+			tile_data.thisTile = Instantiate(Resources.Load("grass", typeof(GameObject))) as GameObject;
+			//Set the scale of the object
+			tile_data.thisTile.transform.localScale = new Vector3(0.125f, 0.2f, 0.125f);
+
 			//Terrain modifier sets the amount of movement the character needs to move through the tile
 			tile_data.TerrainModifier = 2;
 		} else if (tile_data.Type == GameTile.TileType.Desert) {
-			//Random number
-			int rand = UnityEngine.Random.Range(0, 3);
-			//Set desert sprite
-			switch (rand) {
-				case 0:
-					tile_sr.sprite = DesertSprite;
-					break;
-				case 1:
-					tile_sr.sprite = DesertSprite1;
-					break;
-				case 2:
-					tile_sr.sprite = DesertSprite2;
-					break;
-			}
+			//Grab the prefab from the resources folder and store it in thisTile variable
+			tile_data.thisTile = Instantiate(Resources.Load("sand", typeof(GameObject))) as GameObject;
+			//Set the scale of the object
+			tile_data.thisTile.transform.localScale = new Vector3(0.125f, 0.2f, 0.125f);
+
 			//Terrain modifier sets the amount of movement the character needs to move through the tile
 			tile_data.TerrainModifier = 2;
 		} else if (tile_data.Type == GameTile.TileType.River) {
-			//Random number
-			int rand = UnityEngine.Random.Range(0, 3);
-			//Set river sprite
-			switch (rand) {
-				case 0:
-					tile_sr.sprite = RiverSprite;
-					break;
-				case 1:
-					tile_sr.sprite = RiverSprite1;
-					break;
-				case 2:
-					tile_sr.sprite = RiverSprite2;
-					break;
-			}
+			//Grab the prefab from the resources folder and store it in thisTile variable
+			tile_data.thisTile = Instantiate(Resources.Load("water", typeof(GameObject))) as GameObject;
+			//Set the scale of the object
+			tile_data.thisTile.transform.localScale = new Vector3(0.125f, 0.2f, 0.125f);
+
 			//Terrain modifier sets the amount of movement the character needs to move through the tile
 			//0 means it takes no cost at all, but usually means the tile isn't traversable
 			tile_data.TerrainModifier = 0;
 			//Disables the tile, so units can't walk over them.
 			tile_data.PassableTile = false;
 		} else if (tile_data.Type == GameTile.TileType.Sea) {
-			//Random number
-			int rand = UnityEngine.Random.Range(0, 3);
-			//Set sea sprite
-			switch (rand) {
-			case 0:
-				tile_sr.sprite = SeaSprite;
-				break;
-			case 1:
-				tile_sr.sprite = SeaSprite1;
-				break;
-			case 2:
-				tile_sr.sprite = SeaSprite2;
-				break;
-			}
+			//Grab the prefab from the resources folder and store it in thisTile variable
+			tile_data.thisTile = Instantiate(Resources.Load("water", typeof(GameObject))) as GameObject;
+			//Set the scale of the object
+			tile_data.thisTile.transform.localScale = new Vector3(0.125f, 0.2f, 0.125f);
+
 			//Terrain modifier sets the amount of movement the character needs to move through the tile
 			//0 means it takes no cost at all, but usually means the tile isn't traversable
 			tile_data.TerrainModifier = 0;
 			//Disables the tile, so units can't walk over them.
 			tile_data.PassableTile = false;
 		} else if (tile_data.Type == GameTile.TileType.Hills) {
-			//Random number
-			int rand = UnityEngine.Random.Range(0, 3);
-			//Set hill sprite
-			switch (rand) {
-			case 0:
-				tile_sr.sprite = HillsSprite;
-				break;
-			case 1:
-				tile_sr.sprite = HillsSprite1;
-				break;
-			case 2:
-				tile_sr.sprite = HillsSprite2;
-				break;
-			}
+			//Grab the prefab from the resources folder and store it in thisTile variable
+			tile_data.thisTile = Instantiate(Resources.Load("grass", typeof(GameObject))) as GameObject;
+			//Set the scale of the object
+			tile_data.thisTile.transform.localScale = new Vector3(0.125f, 0.2f, 0.125f);
+
 			//Terrain modifier sets the amount of movement the character needs to move through the tile
 			tile_data.TerrainModifier = 3;
 		} else if (tile_data.Type == GameTile.TileType.Forest) {
-			//Random number
-			int rand = UnityEngine.Random.Range(0, 3);
-			//Set hill sprite
-			switch (rand) {
-			case 0:
-				tile_sr.sprite = ForestSprite;
-				break;
-			case 1:
-				tile_sr.sprite = ForestSprite1;
-				break;
-			case 2:
-				tile_sr.sprite = ForestSprite2;
-				break;
-			}
+			//Grab the prefab from the resources folder and store it in thisTile variable
+			tile_data.thisTile = Instantiate(Resources.Load("grass", typeof(GameObject))) as GameObject;
+			//Set the scale of the object
+			tile_data.thisTile.transform.localScale = new Vector3(0.125f, 0.2f, 0.125f);
+
 			//Terrain modifier sets the amount of movement the character needs to move through the tile
 			tile_data.TerrainModifier = 3;
 		} else if (tile_data.Type == GameTile.TileType.Stone_Road) {
-			//Random number
-			int rand = UnityEngine.Random.Range(0, 3);
-			//Set road sprite
-			switch (rand) {
-			case 0:
-				tile_sr.sprite = RoadSprite;
-				break;
-			case 1:
-				tile_sr.sprite = RoadSprite1;
-				break;
-			case 2:
-				tile_sr.sprite = RoadSprite2;
-				break;
-			}
+			//Grab the prefab from the resources folder and store it in thisTile variable
+			tile_data.thisTile = Instantiate(Resources.Load("grass", typeof(GameObject))) as GameObject;
+			//Set the scale of the object
+			tile_data.thisTile.transform.localScale = new Vector3(0.125f, 0.2f, 0.125f);
+
 			//Terrain modifier sets the amount of movement the character needs to move through the tile
 			tile_data.TerrainModifier = 1;
 		} else {
@@ -363,10 +303,5 @@ public class Game : MonoBehaviour {
 			//This means the tile is either Empty or Null!
 			Debug.LogError("Unrecognized tileType");
 		}
-
-		//Set the draw mode to tiled, because it'd otherwise be way too small (0.125)
-		tile_sr.drawMode = SpriteDrawMode.Tiled;
-		//Set the size of the draw mode to 1.
-		tile_sr.size = new Vector2 (1, 1);
 	}
 }
