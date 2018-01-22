@@ -154,12 +154,16 @@ public class Game : MonoBehaviour {
 		GameCharacter unit2 = new GameCharacter("Pikemen");
 		unit2.setXPosition(7);
 		unit2.setZPosition(5);
+		GameCharacter villager1 = new GameCharacter("Villager");
+		villager1.setXPosition(8);
+		villager1.setZPosition(8);
 		//Create new List
 		unitList = new List<GameCharacter>();
 		//Add pikemen to list
 		unitList.Add (pikemen1);
 		unitList.Add(unit);
 		unitList.Add(unit2);
+		unitList.Add(villager1);
 		//----------//
 		// END TEST //
 		//----------//
@@ -198,7 +202,7 @@ public class Game : MonoBehaviour {
 	// - Param 2: Z coordinate
 	//TODO: Actually make buildings possible
 	public static bool getBuildingOnPosition(int x, int z) {
-		return true;
+		return false;
 	}
 
 	//Function that gets called as soon as the type of a tile changes.

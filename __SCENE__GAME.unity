@@ -140,30 +140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 764f061b024676e4f8cdd7df11d2d8a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MountainsSprite: {fileID: 21300000, guid: ada80843035831c41a4cf4de4a069072, type: 3}
-  MountainsSprite1: {fileID: 21300000, guid: ada80843035831c41a4cf4de4a069072, type: 3}
-  MountainsSprite2: {fileID: 21300000, guid: ada80843035831c41a4cf4de4a069072, type: 3}
-  GrassSprite: {fileID: 21300000, guid: 4b73a21212e809041ada45ad230461dd, type: 3}
-  GrassSprite1: {fileID: 21300000, guid: de1474319b646f74c8b047ba1726f905, type: 3}
-  GrassSprite2: {fileID: 21300000, guid: eea08053fce5eca4ea6d2298d545dc1c, type: 3}
-  ForestSprite: {fileID: 21300000, guid: 3d694ece4a9db4646bbf4865ffe78352, type: 3}
-  ForestSprite1: {fileID: 21300000, guid: d1c355d225447be4981841356fe3c116, type: 3}
-  ForestSprite2: {fileID: 21300000, guid: 062959a46f8f46342a33c88ce95f4055, type: 3}
-  RiverSprite: {fileID: 21300000, guid: 3ec634be21651ef4d99ab78846532c2f, type: 3}
-  RiverSprite1: {fileID: 21300000, guid: 3ec634be21651ef4d99ab78846532c2f, type: 3}
-  RiverSprite2: {fileID: 21300000, guid: 3ec634be21651ef4d99ab78846532c2f, type: 3}
-  SeaSprite: {fileID: 21300000, guid: 25f29386447c0a64f9e180af210925e6, type: 3}
-  SeaSprite1: {fileID: 21300000, guid: 25f29386447c0a64f9e180af210925e6, type: 3}
-  SeaSprite2: {fileID: 21300000, guid: 25f29386447c0a64f9e180af210925e6, type: 3}
-  RoadSprite: {fileID: 21300000, guid: 13f1ecbd6fde8294fbf64f6f9f5bafa7, type: 3}
-  RoadSprite1: {fileID: 21300000, guid: 13f1ecbd6fde8294fbf64f6f9f5bafa7, type: 3}
-  RoadSprite2: {fileID: 21300000, guid: 13f1ecbd6fde8294fbf64f6f9f5bafa7, type: 3}
-  DesertSprite: {fileID: 21300000, guid: 554a8059ae7d5ba4aafad03f32a97198, type: 3}
-  DesertSprite1: {fileID: 21300000, guid: 554a8059ae7d5ba4aafad03f32a97198, type: 3}
-  DesertSprite2: {fileID: 21300000, guid: 554a8059ae7d5ba4aafad03f32a97198, type: 3}
-  HillsSprite: {fileID: 21300000, guid: 0cc81d1f926b00b4198790f9130b3ed5, type: 3}
-  HillsSprite1: {fileID: 21300000, guid: 0cc81d1f926b00b4198790f9130b3ed5, type: 3}
-  HillsSprite2: {fileID: 21300000, guid: 0cc81d1f926b00b4198790f9130b3ed5, type: 3}
+  tileOverlay: {fileID: 21300000, guid: a9674b36c935d6f42b682f560c02cdba, type: 3}
 --- !u!4 &121857367
 Transform:
   m_ObjectHideFlags: 0

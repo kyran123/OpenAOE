@@ -158,11 +158,23 @@ public class KeyBoardControls : MonoBehaviour {
 							//Remove the graph of moves
 							this.selectedUnit.getCharacterAI().removePossibleMovesGraph();
 							//Set position of selector back to original position
-							this.transform.localPosition = new Vector3(
+							this.updatePosition(
 								this.selectedUnit.getCharacterObject().transform.position.x,
 								this.transform.position.y,
 								this.selectedUnit.getCharacterObject().transform.position.z
 							);
+
+							/*this.transform.localPosition = new Vector3(
+								this.selectedUnit.getCharacterObject().transform.position.x,
+								this.transform.position.y,
+								this.selectedUnit.getCharacterObject().transform.position.z
+							);
+							this.cam.transform.localPosition = new Vector3(
+								this.selectedUnit.getCharacterObject().transform.position.x,
+								this.transform.position.y,
+								this.selectedUnit.getCharacterObject().transform.position.z
+							);*/
+
 							//Empty the selected unit from the variable
 							//So the user has to select the unit again
 							this.selectedUnit = null;
@@ -329,12 +341,6 @@ public class KeyBoardControls : MonoBehaviour {
 		//Generate the possible moves there are for the selected unit
 		this.selectedUnit.getCharacterAI().generatePossibleMovesGraph(GameMap._GMinstance.getTileAt(x, z), selectedUnit.movementPoints);
 	}
-
-	//TODO: Change camera settings like:
-	//Possibly - Projection to Orthographic
-	//The near clipping panes need to be adjusted
-	//And change camera position
-	//Do this when art has been already created
 
 	//TODO: Mouseclick
 	//Set the position of the selector to the mouse click position

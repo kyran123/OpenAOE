@@ -10,6 +10,7 @@ using UnityEngine;
 using System;
 using DG.Tweening;
 using System.Xml;
+using UnityEngine.Events;
 
 public class GameCharacter {
 	//Get the instance of the ActionMenu stored here, since we want to add abilities to it depending on the situation
@@ -193,6 +194,7 @@ public class GameCharacter {
 		this.charAI.removePossibleMovesGraph();
 		//Set selected unit to null
 		this.keyboardControls.selectedUnit = null;
+		this.setUnitLocked(false);
 	}
 
 	//Function that will be called when one of the ability buttons is clicked
@@ -261,22 +263,21 @@ public class GameCharacter {
 		this.abilityList.Clear();
 
 		//Check if there is any unit to attack
-		if(CharacterPikemen.checkIfAttackIsValid(this)) {
+		if(this.checkAbility("Attack")) {
 			if(!this.abilityList.Contains("Attack")) this.abilityList.Add("Attack");
 		}
 
 		//Loop through abilities and check if they are valid for this position
 		foreach(string ability in this.abilities) {
 			//Check if the ability is usable in this spot
-			//TODO: check which unit this is and check then if if the ability is available
-			if(CharacterPikemen.checkIfAbilityIsValid(ability)) {
+			if(this.checkAbility(ability)) {
 				//Add the ability to the list
 				if(!this.abilityList.Contains(ability))	this.abilityList.Add(ability);
 			}
 		}
 
 		//Check if there is a farm on the ground
-		if(CharacterPikemen.checkIfAbilityIsValid("Pillage")) {
+		if(this.checkAbility("Pillage")) {
 			if(!this.abilityList.Contains("Pillage")) this.abilityList.Add("Pillage");
 		}
 
@@ -287,6 +288,27 @@ public class GameCharacter {
 
 		//Show the actual menu on screen
 		this.am.updateMenu(this, abilityList);
+	}
+
+	//Function that simply checks what unit this is and calls the function from that static class
+	private bool checkAbility(string ability){
+		//Initialize bool variable
+		bool result = false;
+
+		//Check which character type it is
+		switch(this.characterName) {
+			case "Pikemen":
+				//IF it's pikemen, call the Pikemen function
+				result = CharacterPikemen.checkIfInteractionIsValid(ability, this);
+				break;
+			case "Villager":
+				//If it is Villager, call the villager function
+				result = CharacterVillager.checkIfInteractionIsValid(ability, this);
+				break;
+		}
+
+		//Return the result
+		return result;
 	}
 
 
@@ -341,6 +363,7 @@ public class GameCharacter {
 				this.attackRange = Int32.Parse (stats.InnerXml);
 			}
 		}
+
 
 		//Get special ability
 		this.characterAbility = rawXML.GetElementsByTagName("special")[0].ChildNodes[0].Value;

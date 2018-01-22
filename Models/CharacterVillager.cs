@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public static class CharacterPikemen {
+public static class CharacterVillager {
 
 	//Main function to call and checks if the interaction is valid
 	// - Param 1: A string containing the ability
@@ -43,7 +43,7 @@ public static class CharacterPikemen {
 	private static bool checkIfAbilityIsValid(string ability){
 		//Check which ability
 		switch(ability) {
-			case "Drill":
+			case "Build":
 				return true;
 		}
 		return false;
@@ -81,9 +81,9 @@ public static class CharacterPikemen {
 	}
 
 
-	//Function that actually executes the drill ability
-	public static void performDrill() {
-
+	//Function that actually executes the build ability
+	public static void performBuild() {
+		Debug.Log("Build");
 	}
 }
 

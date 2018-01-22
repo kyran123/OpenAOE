@@ -1,0 +1,26 @@
+﻿<unit>
+	<id>0002</id>
+	<name>Villager</name>
+	<type>Villager</type>
+	<base>
+		<hitpoints>100</hitpoints>
+		<damage>50</damage>
+		<defense>50</defense>
+		<movement>7</movement>
+		<viewrange>5</viewrange>
+		<attackrange>1</attackrange>
+	</base>
+	<special>Building</special>
+	<abilities>
+		<ability>Build</ability>
+	</abilities>
+	<isunlocked>true</isunlocked>
+	<costtounlock>500</costtounlock>
+	<cost>
+		<food>75</food>
+	</cost>
+	<research>0</research>
+	<replacedby>0000</replacedby>
+	<bonuses>
+	</bonuses>
+</unit>
