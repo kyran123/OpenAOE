@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public static class CharacterVillager {
+public static class CharacterPikemen {
 
 	//Main function to call and checks if the interaction is valid
 	// - Param 1: A string containing the ability
@@ -43,7 +43,7 @@ public static class CharacterVillager {
 	private static bool checkIfAbilityIsValid(string ability){
 		//Check which ability
 		switch(ability) {
-			case "Build":
+			case "Drill":
 				return true;
 		}
 		return false;
@@ -55,7 +55,7 @@ public static class CharacterVillager {
 		int gcX = gc.getCharacterInteraction().x;
 		int gcZ = gc.getCharacterInteraction().z;
 		//Check if there is a building on position
-		if(Game.getBuildingOnPosition(gcX, gcZ)) {
+		if(Game.getBuildingOnPosition(gcX, gcZ) != null) {
 			//TODO: Check if there IS an pillagable building
 			return true;
 		}
@@ -81,9 +81,72 @@ public static class CharacterVillager {
 	}
 
 
-	//Function that actually executes the build ability
-	public static void performBuild() {
-		Debug.Log("Build");
+	//Function that actually executes the drill ability
+	public static void performDrill() {
+
+	}
+
+	//Function that changes tileType
+	public static void changeTileType(string type) {
+
+		int x = Mathf.RoundToInt(KeyBoardControls._instance.selectedUnit.getCharacterObject().transform.position.x);
+		int z = Mathf.RoundToInt(KeyBoardControls._instance.selectedUnit.getCharacterObject().transform.position.z);
+
+		GameMap gmInstance = GameMap._GMinstance;
+		GameTile gmTile = gmInstance.getTileAt(x, z);
+
+		//Check if unit is allowed to change tileType
+		switch(type) {
+			case "Empty":
+				if(gmTile.Type != GameTile.TileType.Empty) {
+					gmTile.setTileType(type);
+					Debug.LogError("Why set tile to empty?");
+				}
+				break;
+			case "Grass":
+				if(gmTile.Type != GameTile.TileType.Grass) {
+					gmTile.changeTile(type);
+				}
+				break;
+			case "Forest":
+				if(gmTile.Type != GameTile.TileType.Forest) {
+					gmTile.changeTile(type);
+				}
+				break;
+			case "Mountain":
+				if(gmTile.Type != GameTile.TileType.Mountains) {
+					gmTile.changeTile(type);
+				}
+				break;
+			case "River":
+				if(gmTile.Type != GameTile.TileType.River) {
+					gmTile.changeTile(type);
+				}
+				break;
+			case "Desert":
+				if(gmTile.Type != GameTile.TileType.Desert) {
+					gmTile.changeTile(type);
+				}
+				break;
+			case "Stone_Road":
+				if(gmTile.Type != GameTile.TileType.Stone_Road) {
+					gmTile.changeTile(type);
+				}
+				break;
+			case "Sea":
+				if(gmTile.Type != GameTile.TileType.Sea) {
+					gmTile.changeTile(type);
+				}
+				break;
+			case "Hill":
+				if(gmTile.Type != GameTile.TileType.Hills) {
+					gmTile.changeTile(type);
+				}
+				break;
+			default:
+				Debug.LogError("type not found -> [CharacterPikemen/changeTileType]");
+				break;
+		}
 	}
 }
 

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public static class CharacterPikemen {
+public static class CharacterVillager {
 
 	//Main function to call and checks if the interaction is valid
 	// - Param 1: A string containing the ability
@@ -43,8 +43,8 @@ public static class CharacterPikemen {
 	private static bool checkIfAbilityIsValid(string ability){
 		//Check which ability
 		switch(ability) {
-			case "Drill":
-				return true;
+			case "Build":
+                return true;
 		}
 		return false;
 	}
@@ -55,7 +55,7 @@ public static class CharacterPikemen {
 		int gcX = gc.getCharacterInteraction().x;
 		int gcZ = gc.getCharacterInteraction().z;
 		//Check if there is a building on position
-		if(Game.getBuildingOnPosition(gcX, gcZ)) {
+		if(Game.getBuildingOnPosition(gcX, gcZ) != null) {
 			//TODO: Check if there IS an pillagable building
 			return true;
 		}
@@ -81,9 +81,17 @@ public static class CharacterPikemen {
 	}
 
 
-	//Function that actually executes the drill ability
-	public static void performDrill() {
-
+	//Function that actually executes the build ability
+	public static GameBuilding performBuild(GameCharacter gc, string buildingType) {
+        //Create new building instance
+        GameBuilding gBuilding = new GameBuilding(buildingType);
+        //Set the position of the building
+        gBuilding.setXPosition(gc.getXPosition());
+        gBuilding.setZPosition(gc.getZPosition());
+        //Add building to player list
+        Game._GameInstance.player.addbuilding(gBuilding);
+        ActionMenu._instance.removeButtonsFromMenu();
+        return gBuilding;
 	}
 }
 

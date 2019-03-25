@@ -1,0 +1,22 @@
+<Building>
+	<id>0001</id>
+	<name>Town Center</name>
+	<type>towncenter</type>
+	<base>
+		<hitpoints>100</hitpoints>
+		<defense>200</defense>
+    <viewrange>2</viewrange>
+	</base>
+  <buildables>
+    <unitId>0001</unitId>
+  </buildables>
+	<isunlocked>true</isunlocked>
+	<costtounlock>1500</costtounlock>
+	<cost>
+		<food>50</food>
+		<iron>10</iron>
+		<gold>5</gold>
+	</cost>
+	<research>0</research>
+	<replacedby>0000</replacedby>
+</Building>

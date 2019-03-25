@@ -21,16 +21,15 @@ public class CharacterModel {
 
 	//Constructor
 	public CharacterModel(){
-		//Create empty object
-		this.unitModel = createEmptyGameObject();
-		setGameObjectPosition(5, 5);
+
 	}
 
 	//Creates empty game object and returns it
-	public GameObject createEmptyGameObject(){
-		GameObject goModel = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-		return goModel;
-	}
+	public void createGameObject(string charName){
+		this.unitModel = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        this.unitModel.name = charName;
+
+    }
 
 	//set Model for the object
 	public void setModel(){
@@ -47,7 +46,7 @@ public class CharacterModel {
 
 	//Move unit on map
 	// - Param 1: List of GameTile classes
-	public void setGameObjectPosition(List<GameTile> path){
+	public void setGameObjectPosition(List<GameTile> path, GameCharacter gc){
 		//Create new Sequence of animations
 		Sequence movementSequence = DOTween.Sequence();
 
@@ -56,9 +55,16 @@ public class CharacterModel {
 			//Get the X and Z coordinates and convert them to floats
 			float xPosition = (float)nextTile.X;
 			float zPosition = (float)nextTile.Z;
-			//Set the object position to the next tile in the list
-			movementSequence.Append(this.unitModel.transform.DOMove(new Vector3(xPosition, 0.8f, zPosition), 0.2f));
-		}
+            //Check if it isn't the original tile the unit was already on (which doesn't count against the movement cost
+            if(path[0] != nextTile) {
+                //Add cost to the movementCost variable
+                gc.addMovementCost(nextTile.TerrainModifier);
+            }
+            //Set the object position to the next tile in the list
+            movementSequence.Append(this.unitModel.transform.DOMove(new Vector3(xPosition, 0.8f, zPosition), 0.2f));
+            //Update unit stats on information panel
+            gc.gameInformationInstance.showCharacterOnTile(gc);
+        }
 	}
 }
 

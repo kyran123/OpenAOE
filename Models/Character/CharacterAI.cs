@@ -176,7 +176,15 @@ public class CharacterAI {
 			foreach(GameTile tile in possibleTiles.Keys.ToList()) {
 				//Save already reachable tiles
 				allReachableTiles.Add(tile);
-				tile.tileOverlay.GetComponent<SpriteRenderer>().color = new Color(0.78f, 0.88f, 0f, 0.4f);
+
+				//Check if the tile is already occupied by an unit
+				if(Game.getCharacterOnPosition(tile.X, tile.Z) != null) {
+					//Show the tile as red, because unit already exists on this tile
+					tile.tileOverlay.GetComponent<SpriteRenderer>().color = new Color(0.98f, 0.33f, 0f, 0.4f);
+				} else {
+					//Show the tile as green
+					tile.tileOverlay.GetComponent<SpriteRenderer>().color = new Color(0.78f, 0.88f, 0f, 0.4f);
+				}
 			}
 
 			//Loop through new tiles to see if they are reachable for the unit

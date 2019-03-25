@@ -41,6 +41,7 @@ public class GameCharacter {
 	}
 
 
+
 	//Variable where the Keyboardcontrol class will be stored
 	protected KeyBoardControls kbc;
 	//The property of the variable
@@ -57,6 +58,18 @@ public class GameCharacter {
 			kbc = value;
 		}
 	}
+
+    //The instance of the GameInformation Class
+    protected GameInformation gi;
+    //The property of the GameInformation instance
+    public GameInformation gameInformationInstance {
+        get {
+            return gi;
+        }
+    }
+
+    //Instance ID
+    public int characterInstanceId { get; protected set; }
 
 	//Basis information about unit
 	// 1. Character id stores the id of the unit (This id is unique to the unit)
@@ -77,6 +90,7 @@ public class GameCharacter {
 	public int baseDamage { get; protected set; }
 	public int baseDefense { get; protected set; }
 	public int movementPoints { get; protected set; }
+    public int movementPointsUsed { get; protected set; }
 	public int viewRange { get; protected set; }
 	public int attackRange { get; protected set; }
 
@@ -109,25 +123,36 @@ public class GameCharacter {
 
 	//Constructor
 	// Param 1: name of the data file in string format
-	public GameCharacter (string type) {
+	public GameCharacter (string type, bool example = false) {
 		string fileName = type + ".xml";
 		//Get Game Character Data from XML file
 		this.getXMLData(fileName);
+        //Update total entities amount
+        Game.totalEntities++;
+        //Set Gamecharacter instance id
+        this.characterInstanceId = Game.newUnitInstanceID();
 		//Instantiate CharacterModel class
 		this.charModel = new CharacterModel();
-		this.getCharacterObject().name = this.characterName;
-		//Instantiate CharacterInteraction class
-		this.charInteraction = new CharacterInteraction();
+        //Instantiate CharacterInteraction class
+        this.charInteraction = new CharacterInteraction();
 		//Set start coordinates of unit (This will depend on scenario later)
 		this.charInteraction.x = 5;
 		this.charInteraction.z = 5;
-		//Set previous Coordinates of unit
-		this.charInteraction.backupPosition();
+        if(example == false) {
+            this.getCharacterModel().createGameObject(this.characterName);
+            this.updatePositionOfModel();
+        }
+        //Set previous Coordinates of unit
+        this.charInteraction.backupPosition();
 		//Instantiate CharacterAI class
 		this.charAI = new CharacterAI();
 		//Get instance of ActionMenu class
 		this.am = GameObject.Find("actionMenu").GetComponent<ActionMenu>();
-	}
+        //Get instance of the KeyboardControls class
+        this.kbc = GameObject.Find("TileSelect").GetComponent<KeyBoardControls>();
+        //Get instance of GameInformation class
+        this.gi = GameObject.Find("ViewObject").GetComponent<GameInformation>();
+    }
 		
 	// Properties of the X Position
 	public int getXPosition() { return this.charInteraction.x; }
@@ -145,6 +170,11 @@ public class GameCharacter {
 		this.charModel.setGameObjectPosition(this.charInteraction.x, z);
 	}
 
+    //Update location of the model
+    public void updatePositionOfModel() {
+        this.getCharacterModel().setGameObjectPosition(this.getXPosition(), this.getZPosition());
+    }
+
 	//Get objects / instances
 	public GameCharacter getInstance() { return this; }
 	public GameObject getCharacterObject() { return this.charModel.getGameObject(); }
@@ -157,7 +187,7 @@ public class GameCharacter {
 		if(path.Count > 0) {
 			if(this.charAI.isReachable(newPosition)) {
 				//Set the position
-				this.charModel.setGameObjectPosition(path);
+				this.charModel.setGameObjectPosition(path, this);
 				//Set the old position into the previous variables before updating the new one
 				this.charInteraction.backupPosition();
 				//Update position in the interaction class
@@ -178,6 +208,13 @@ public class GameCharacter {
 	public bool isUnitLocked(){
 		return this.charInteraction.IsLocked;
 	}
+
+    //Set the movementCost points
+    public void addMovementCost(int cost) {
+        if((this.movementPoints - this.movementPointsUsed) >= 0) {
+            this.movementPointsUsed += cost;
+        }
+    }
 		
 	//Function that will be called when one of the ability buttons is clicked
 	//Done is one of the basic unit movement abilities
@@ -187,72 +224,57 @@ public class GameCharacter {
 		//Remove the buttons from the action menu
 		ActionMenu._instance.removeButtonsFromMenu();
 		//Set the menu focus to false, basically disable it
-		this.keyboardControls.updateMenuFocus();
+		this.keyboardControls.setMenuFocus(false);
+        //Reset game state of keyboard controls to default movement
+        this.keyboardControls.resetKbcState();
 		//Change color of the unit
 		this.charModel.getGameObject().GetComponent<MeshRenderer>().material.color = Color.gray;
 		//Remove graph
 		this.charAI.removePossibleMovesGraph();
 		//Set selected unit to null
 		this.keyboardControls.selectedUnit = null;
-		this.setUnitLocked(false);
+        //Update unit stats on information panel
+        this.gi.showCharacterOnTile(this);
 	}
 
 	//Function that will be called when one of the ability buttons is clicked
 	//Undo is one of the basic unit movement abilities
 	public void unitUndo(){
-		//Reset the position to the previous position
 		this.charInteraction.resetPosition();
-		//Sets the game object position to the restored position
-		this.charModel.setGameObjectPosition(this.charInteraction.x, this.charInteraction.z);
+        this.getCharacterInteraction().backupPosition();
+        //Sets the game object position to the restored position
+        this.charModel.setGameObjectPosition(this.charInteraction.x, this.charInteraction.z);
 		//Set the position of the selector and camera
-		this.keyboardControls.updatePosition((float)this.charInteraction.x, keyboardControls.transform.position.y, (float)this.charInteraction.z);
+		this.keyboardControls.proceedSelecterMovement(this.charInteraction.x, this.charInteraction.z);
 		//Remove the buttons from the action menu
 		ActionMenu._instance.removeButtonsFromMenu();
 		//Set the menu focus to false, basically disable it
-		this.keyboardControls.updateMenuFocus();
-		//Reselect unit and show movement overlay
-		this.keyboardControls.selectUnit(this.charInteraction.x, this.charInteraction.z);
-	}
+		this.keyboardControls.setMenuFocus(false);
+        //Reset game state of keyboard controls to default movement
+        this.keyboardControls.resetKbcState();
+        //Reset color of unit to white and reselect the unit
+        this.getCharacterObject().GetComponent<MeshRenderer>().material.color = Color.white;
+        //Reset movement points used
+        this.movementPointsUsed = 0;
+        //Update unit stats on information panel
+        this.gi.showCharacterOnTile(this);
+    }
 
 	//Function that will be called when one of the ability buttons is clicked
 	//Pillage is one of the basic unit abilities
 	public void unitPillage(){
 		//TODO: Remove the actual farm
 		ActionMenu._instance.removeButtonsFromMenu();
-		this.keyboardControls.updateMenuFocus();
+		this.keyboardControls.setMenuFocus(false);
 	}
 
-	//Function that will be called when the Attack ability button is clicked
-	//Attacks is one of the basic unit abilities
-	public void unitAttack(){
-		//TODO: Attack the unit
-		ActionMenu._instance.removeButtonsFromMenu();
-		this.keyboardControls.updateMenuFocus();
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    //Function that will be called when the Attack ability button is clicked
+    //Attacks is one of the basic unit abilities
+    public void unitAttack() {
+        //TODO: Attack the unit
+        ActionMenu._instance.removeButtonsFromMenu();
+        this.keyboardControls.setMenuFocus(false);
+    }
 
 
 
@@ -291,7 +313,7 @@ public class GameCharacter {
 	}
 
 	//Function that simply checks what unit this is and calls the function from that static class
-	private bool checkAbility(string ability){
+	public bool checkAbility(string ability) {
 		//Initialize bool variable
 		bool result = false;
 
@@ -311,6 +333,35 @@ public class GameCharacter {
 		return result;
 	}
 
+    //Function that invokes an ability (that is not predefined in the menu)
+	public void invokeAbility(string ability, string info = "") {
+		//Check which character type it is
+		switch(this.characterName) {
+			case "Pikemen":
+				switch(ability) {
+					case "changeTileType":
+						CharacterPikemen.changeTileType(info);
+						break;
+				}
+				break;
+			case "Villager":
+                switch(ability) {
+                    case "Build":
+                        this.am.showBuildMenu(Game._GameInstance.getAllPossibleBuildingsToBuild(), this);
+                        break;
+                }
+				break;
+		}
+	}
+
+    //Function that processes all steps to actually place the building
+    public void executeBuild(string buildingType) {
+        GameBuilding gBuilding = CharacterVillager.performBuild(this, buildingType);
+        this.kbc.resetHighlightedUnit();
+        this.kbc.setMenuFocus(false);
+        this.gameInformationInstance.showBuildingOnTile(gBuilding);
+    }
+
 
 	//Retrieves all data from the XML file by type
 	private void getXMLData(string cType){
@@ -323,7 +374,7 @@ public class GameCharacter {
 		//Loads file into the instance of XmlDocument
 		rawXML.Load (dataURL);
 
-		this.characterId = rawXML.GetElementsByTagName("id") [0].ChildNodes [0].Value;
+		this.characterId = rawXML.GetElementsByTagName("id")[0].ChildNodes[0].Value;
 		this.characterName = rawXML.GetElementsByTagName("name")[0].ChildNodes[0].Value;
 		this.characterType = rawXML.GetElementsByTagName("type")[0].ChildNodes[0].Value;
 
@@ -331,36 +382,36 @@ public class GameCharacter {
 		XmlNodeList baseTag = rawXML.GetElementsByTagName ("base");
 		XmlNodeList baseStats = baseTag[0].ChildNodes;
 		//Loop through XML nodes in the base node
-		foreach (XmlNode stats in baseStats) {
+		foreach (XmlNode stat in baseStats) {
 			//Check if child node has the tag 'hitpoints'
-			if (stats.Name == "hitpoints") {
+			if (stat.Name == "hitpoints") {
 				//Set hitpoints to the amount in Data file
-				this.hitPoints = Int32.Parse(stats.InnerXml);
+				this.hitPoints = Int32.Parse(stat.InnerXml);
 			}
 			//Check if child node has the tag 'damage'
-			if (stats.Name == "damage") {
+			if (stat.Name == "damage") {
 				//Set damage to the amount in Data file
-				this.baseDamage = Int32.Parse (stats.InnerXml);
+				this.baseDamage = Int32.Parse (stat.InnerXml);
 			}
 			//Check if child node has the tag 'defense'
-			if (stats.Name == "defense") {
+			if (stat.Name == "defense") {
 				//Set defense to the amount in Data file
-				this.baseDefense = Int32.Parse (stats.InnerXml);
+				this.baseDefense = Int32.Parse (stat.InnerXml);
 			}
 			//Check if child node has the tag 'movement'
-			if (stats.Name == "movement") {
+			if (stat.Name == "movement") {
 				//Set movement to the amount in Data file
-				this.movementPoints = Int32.Parse (stats.InnerXml);
+				this.movementPoints = Int32.Parse (stat.InnerXml);
 			}
 			//Check if child node has the tag 'viewrange'
-			if (stats.Name == "viewrange") {
+			if (stat.Name == "viewrange") {
 				//Set viewrange to the amount in Data file
-				this.viewRange = Int32.Parse (stats.InnerXml);
+				this.viewRange = Int32.Parse (stat.InnerXml);
 			}
 			//Check if child node has the tag 'attackrange'
-			if (stats.Name == "attackrange") {
+			if (stat.Name == "attackrange") {
 				//Set attackrange to the amount in Data file
-				this.attackRange = Int32.Parse (stats.InnerXml);
+				this.attackRange = Int32.Parse (stat.InnerXml);
 			}
 		}
 
@@ -386,13 +437,9 @@ public class GameCharacter {
 			}
 		}
 
-		//Set wether the unit is unlocked to play
-		string tempUnlocked = rawXML.GetElementsByTagName("isunlocked")[0].ChildNodes[0].Value;
-		if (tempUnlocked == "true") {
-			this.isUnlocked = true;
-		} else {
-			this.isUnlocked = false;
-		}
+        //Set wether the unit is unlocked to play
+        this.isUnlocked = Boolean.Parse(rawXML.GetElementsByTagName("isunlocked")[0].ChildNodes[0].Value);
+		
 		//Set how much it costs to unlock it (even if it is already unlocked by default)
 		this.costToUnlock = Int32.Parse(rawXML.GetElementsByTagName("costtounlock")[0].ChildNodes[0].Value);
 		//Set at what research this unit is buildable
@@ -403,7 +450,7 @@ public class GameCharacter {
 		this.costToBuild = new Dictionary<string, int>();
 		//Get the list of cost tags
 		XmlNodeList costList = rawXML.GetElementsByTagName ("cost");
-		XmlNodeList costContent = abilityList[0].ChildNodes;
+		XmlNodeList costContent = costList[0].ChildNodes;
 		//Loop through XML nodes in the cost node
 		foreach(XmlNode cost in costContent) {
 			//Check if the added cost node is actually a valid resource

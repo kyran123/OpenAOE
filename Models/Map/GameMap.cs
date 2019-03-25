@@ -54,6 +54,24 @@ public class GameMap {
 		tiles = new GameTile[width, height];
 	}
 
+    //Checks if tile on Coordinates exists
+    public bool isTileValid(int x, int z) {
+        //Checks if the X and Y coordinate exceeds map limits
+        if(x > width || x < 0 || z > height || z < 0) {
+            //Log that the tile is out of range
+            Debug.LogError("Tile (" + x + ", " + z + ") is out of range.");
+            //Return false, that this is not a valid tile to move on
+            return false;
+        }
+        //Check if tile type is empty
+        if(tiles[x, z].Type == GameTile.TileType.Empty) {
+            //Return false, that this is not a valid tile to move on
+            return false;
+        }
+        //Return true, when the tile exists and is not empty
+        return true;
+    }
+
 	//Creates a new tile instance
 	public void setTile(int x, int z){
 		//Stores the new tile Instance in the tiles array with the X and z coordinates as key
@@ -101,6 +119,20 @@ public class GameMap {
 				}
 			}
 		}
+	}
+
+	//Removes the entire path finding graph
+	//WARNING: always use this when you change tile game object!!!
+	public void emptyPathFindingGraph(){
+		//Loop through all the tiles on the X and Z coords
+		for(int x = 0; x < width; x++) {
+			for(int z = 0; z < height; z++) {
+				//Call for each tile, the empty neighbourtiles function, which creates a new, empty list of neighbourtiles
+				getTileAt(x, z).emptyNeighbourTiles();
+			}
+		}
+		//Generate new path finding graph
+		generatePathfindingGraph();
 	}
 
 	//Add the neighbour of a tile when it is passable

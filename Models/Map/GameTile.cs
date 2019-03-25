@@ -126,6 +126,10 @@ public class GameTile {
 		this.neighbourTiles = new List<GameTile>();
 	}
 
+	public void emptyNeighbourTiles(){
+		this.neighbourTiles = new List<GameTile>();
+	}
+
 	//Calculate and return the distance between 2 tiles
 	public float distanceTo(GameTile neighbour){
 		//Check if the given parameter is not null
@@ -155,35 +159,123 @@ public class GameTile {
 
 	//Sets the type of tile seperately, to make sure it gets updated with the callback
 	public void setTileType(string type){
-		switch (type) {
-		case "Grass":
-			this.Type = GameTile.TileType.Grass;
-			break;
-		case "Mountain":
-			this.Type = GameTile.TileType.Mountains;
-			break;
-		case "Desert":
-			this.Type = GameTile.TileType.Desert;
-			break;
-		case "Forest":
-			this.Type = GameTile.TileType.Forest;
-			break;
-		case "Hill":
-			this.Type = GameTile.TileType.Hills;
-			break;
-		case "River":
-			this.Type = GameTile.TileType.River;
-			break;
-		case "Sea":
-			this.Type = GameTile.TileType.Sea;
-			break;
-		case "Road":
-			this.Type = GameTile.TileType.Stone_Road;
-			break;			
-		case "Empty":
-		default:
-			this.Type = GameTile.TileType.Empty;
-			break;
+		if(this != null){
+			switch (type) {
+				case "Grass":
+					this.Type = GameTile.TileType.Grass;
+					break;
+				case "Mountain":
+					this.Type = GameTile.TileType.Mountains;
+					break;
+				case "Desert":
+					this.Type = GameTile.TileType.Desert;
+					break;
+				case "Forest":
+					this.Type = GameTile.TileType.Forest;
+					break;
+				case "Hill":
+					this.Type = GameTile.TileType.Hills;
+					break;
+				case "River":
+					this.Type = GameTile.TileType.River;
+					break;
+				case "Sea":
+					this.Type = GameTile.TileType.Sea;
+					break;
+				case "Road":
+					this.Type = GameTile.TileType.Stone_Road;
+					break;			
+				case "Empty":
+				default:
+					this.Type = GameTile.TileType.Empty;
+					break;
+			}
 		}
 	}
+
+    //Get the string of the tile type to display to the user
+    public string getTileTypeName() {
+        switch (this.type) {
+            case TileType.Grass:
+                return "Grass";
+            case TileType.Mountains:
+                return "Mountains";
+            case TileType.Desert:
+                return "Desert";
+            case TileType.Forest:
+                return "Forest";
+            case TileType.Hills:
+                return "Hills";
+            case TileType.River:
+                return "River";
+            case TileType.Sea:
+                return "Sea";
+            case TileType.Stone_Road:
+                return "Road";
+            default:
+            case TileType.Empty:
+                return "";
+        }
+    }
+
+	public void changeTile(string type) {
+
+		GameTile oldTile = gameMap.getTileAt(this.X, this.Z);
+		oldTile.thisTile.name = "Old_Tile_Pls_Remove";
+
+		//Gets the tile class based on the X and Y position
+		gameMap.setTile(this.X, this.Z);
+		GameTile tile_data = gameMap.getTileAt(this.X, this.Z);
+
+
+		//Sets the actual tile type
+		tile_data.setTileType(type);
+
+		Game._GameInstance.OnTileTypeChange(tile_data);
+
+		//Set position of tile
+		//It's position is based of the X and Z axes because this is supposed to be a flat board in a 3D build!
+		//This means the camera is creating the Isometric view by angling it 50 degrees on the X and 45 on the Y axes.
+		tile_data.thisTile.transform.position = new Vector3(tile_data.X, 0, tile_data.Z);
+		tile_data.thisTile.transform.SetParent(Game._GameInstance.transform, true);
+		//Give object name
+		tile_data.thisTile.name = "Tile_" + tile_data.X + "_" + tile_data.Z;
+
+		//Set overlay object
+		//This object is only visible when there is something to overlay.
+		//Think of attacks, moves etc.
+		tile_data.tileOverlay = new GameObject();
+		//Set name of overlay Objects
+		tile_data.tileOverlay.name = "Overlay";
+		//Set the parent of the object
+		tile_data.tileOverlay.transform.SetParent(tile_data.thisTile.transform);
+		//Flip overlay
+		tile_data.tileOverlay.transform.Rotate(-90, 0, 0);
+		//Set the scale of the object
+		tile_data.tileOverlay.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
+		//Set the position of the object
+		tile_data.tileOverlay.transform.localPosition = new Vector3(0f, 1.4f, 0f);
+
+		//Add sprite renderer to the tileoverlay object
+		SpriteRenderer tile_sr = tile_data.tileOverlay.AddComponent<SpriteRenderer>();
+		//Set sprite
+		tile_sr.sprite = Game._GameInstance.tileOverlay;
+		//Set drawmode, because otherwise the tile would be too small (0.125)
+		tile_sr.drawMode = SpriteDrawMode.Tiled;
+		//Set the color to invisible so you don't see the overlay until the color is actually changed
+		tile_sr.color = new Color(1f, 1f, 1f, 0f);
+
+		//Register a callback to the 'OnTileTypeChange' function
+		tile_data.registerTileTypeChangedCallback((tile) => {
+			Game._GameInstance.OnTileTypeChange(tile_data);
+		});
+
+
+		UnityEngine.Object.Destroy(oldTile.thisTile);
+
+
+		//Regenerate path finding graph
+		gameMap.emptyPathFindingGraph();
+	}
+
 }

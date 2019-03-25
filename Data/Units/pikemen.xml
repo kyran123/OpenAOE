@@ -13,6 +13,7 @@
 	<special>antiCavalry</special>
 	<abilities>
 		<ability>Drill</ability>
+		<ability>changeTileType</ability>
 	</abilities>
 	<isunlocked>true</isunlocked>
 	<costtounlock>1500</costtounlock>
